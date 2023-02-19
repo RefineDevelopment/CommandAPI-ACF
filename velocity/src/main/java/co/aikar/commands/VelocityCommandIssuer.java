@@ -82,7 +82,7 @@ public class VelocityCommandIssuer implements CommandIssuer {
 
     @Override
     public void sendClickableInternal(String message, String hover, String command, String suggest) {
-        source.sendMessage(ACFVelocityUtil.color(message));
+        new Clickable(message, hover, command, suggest).sendToPlayer(source);
     }
 
     @Override
