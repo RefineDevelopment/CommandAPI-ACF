@@ -80,7 +80,7 @@ public class CommandHelpFormatter {
     public void printHelpCommand(CommandHelp help, CommandIssuer issuer, HelpEntry entry) {
         String formatted = this.manager.formatMessage(issuer, MessageType.HELP, MessageKeys.HELP_FORMAT, getEntryFormatReplacements(help, entry));
         for (String msg : ACFPatterns.NEWLINE.split(formatted)) {
-            issuer.sendMessageInternal(ACFUtil.rtrim(msg));
+            issuer.sendClickableInternal(ACFUtil.rtrim(msg), "", "", entry.getCommandPrefix() + entry.getCommand());
         }
     }
 
@@ -129,7 +129,7 @@ public class CommandHelpFormatter {
     public void printDetailedHelpCommand(CommandHelp help, CommandIssuer issuer, HelpEntry entry) {
         String formatted = this.manager.formatMessage(issuer, MessageType.HELP, MessageKeys.HELP_DETAILED_COMMAND_FORMAT, getEntryFormatReplacements(help, entry));
         for (String msg : ACFPatterns.NEWLINE.split(formatted)) {
-            issuer.sendMessageInternal(ACFUtil.rtrim(msg));
+            issuer.sendClickableInternal(ACFUtil.rtrim(msg), "", "", entry.getCommandPrefix() + entry.getCommand());
         }
     }
 

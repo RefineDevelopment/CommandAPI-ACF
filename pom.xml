@@ -203,7 +203,6 @@
         <module>bukkit</module>
         <module>paper</module>
         <module>bungee</module>
-        <module>sponge</module>
         <module>jda</module>
         <module>velocity</module>
     </modules>

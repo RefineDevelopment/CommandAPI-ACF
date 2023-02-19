@@ -70,6 +70,11 @@ public class BukkitCommandIssuer implements CommandIssuer {
     }
 
     @Override
+    public void sendClickableInternal(String message, String hover, String command, String suggest) {
+        new Clickable(ACFBukkitUtil.color(message), ACFBukkitUtil.color(hover), command, suggest);
+    }
+
+    @Override
     public void sendMessageInternal(String message) {
         sender.sendMessage(ACFBukkitUtil.color(message));
     }

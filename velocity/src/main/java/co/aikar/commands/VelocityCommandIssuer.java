@@ -80,6 +80,10 @@ public class VelocityCommandIssuer implements CommandIssuer {
         return source.hasPermission(name);
     }
 
+    @Override
+    public void sendClickableInternal(String message, String hover, String command, String suggest) {
+        source.sendMessage(ACFVelocityUtil.color(message));
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -10,7 +10,6 @@
         <module name="acf-jda" />
         <module name="acf-paper" />
         <module name="example-plugin" />
-        <module name="acf-sponge" />
         <module name="acf" />
         <module name="acf-velocity" />
         <module name="acf-core" />

@@ -95,5 +95,12 @@ public interface CommandIssuer {
      * @param message
      */
     @Deprecated
+    void sendClickableInternal(String message, String hover, String command, String suggest);
+
+    /**
+     * @deprecated Do not call this, for internal use. Not considered part of the API and may break.
+     * @param message
+     */
+    @Deprecated
     void sendMessageInternal(String message);
 }
