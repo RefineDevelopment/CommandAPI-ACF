@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -76,7 +77,7 @@ public abstract class CommandManager<
 
     protected boolean usePerIssuerLocale = false;
     protected List<IssuerLocaleChangedCallback<I>> localeChangedCallbacks = new ArrayList<>();
-    protected Set<Locale> supportedLanguages = new HashSet<>(Arrays.asList(Locales.ENGLISH, Locales.DUTCH, Locales.GERMAN, Locales.SPANISH, Locales.FRENCH, Locales.CZECH, Locales.PORTUGUESE, Locales.SWEDISH, Locales.NORWEGIAN_BOKMAAL, Locales.NORWEGIAN_NYNORSK, Locales.RUSSIAN, Locales.BULGARIAN, Locales.HUNGARIAN, Locales.TURKISH, Locales.JAPANESE, Locales.CHINESE, Locales.SIMPLIFIED_CHINESE, Locales.TRADITIONAL_CHINESE, Locales.KOREAN));
+    protected Set<Locale> supportedLanguages = new HashSet<>(Collections.singletonList(Locales.ENGLISH));
     protected Map<MessageType, MF> formatters = new IdentityHashMap<>();
     protected MF defaultFormatter;
     protected int defaultHelpPerPage = 10;

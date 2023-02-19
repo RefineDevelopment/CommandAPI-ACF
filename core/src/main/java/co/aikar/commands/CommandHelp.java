@@ -152,13 +152,14 @@ public class CommandHelp {
         this.helpEntries.sort(Comparator.comparing(HelpEntry::getCommand));
 
         List<HelpEntry> helpEntries = getHelpEntries().stream().filter(HelpEntry::shouldShow).collect(Collectors.toList());
-        Iterator<HelpEntry> results = helpEntries.stream()
-                .sorted(Comparator.comparingInt(helpEntry -> helpEntry.getSearchScore() * -1)).iterator();
+        Iterator<HelpEntry> results = helpEntries.stream().sorted(Comparator.comparingInt(helpEntry -> helpEntry.getSearchScore() * -1)).iterator();
+
         if (!results.hasNext()) {
             issuer.sendMessage(MessageType.ERROR, MessageKeys.NO_COMMAND_MATCHED_SEARCH, "{search}", ACFUtil.join(this.search, " "));
             helpEntries = getHelpEntries();
             results = helpEntries.iterator();
         }
+
         this.totalResults = helpEntries.size();
         int min = (this.page - 1) * this.perPage; // TODO: per page configurable?
         int max = min + this.perPage;
