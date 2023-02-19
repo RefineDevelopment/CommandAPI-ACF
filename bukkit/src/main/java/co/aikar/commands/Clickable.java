@@ -3,6 +3,7 @@ package co.aikar.commands;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Clickable {
@@ -27,7 +28,11 @@ public class Clickable {
         component = message;
     }
 
-    public void sendToPlayer(Player player) {
-        player.spigot().sendMessage(component);
+    public void sendToPlayer(CommandSender player) {
+        if (player instanceof Player) {
+            ((Player) player).spigot().sendMessage(component);
+        } else {
+            player.sendMessage(component.getText());
+        }
     }
 }

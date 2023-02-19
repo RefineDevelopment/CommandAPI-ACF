@@ -72,7 +72,7 @@ public class BungeeCommandIssuer implements CommandIssuer {
 
     @Override
     public void sendClickableInternal(String message, String hover, String command, String suggest) {
-        new Clickable(ACFBungeeUtil.color(message), ACFBungeeUtil.color(hover), command, suggest);
+        new Clickable(ACFBungeeUtil.color(message), ACFBungeeUtil.color(hover), command, suggest).sendToPlayer(sender);
     }
 
     @Override

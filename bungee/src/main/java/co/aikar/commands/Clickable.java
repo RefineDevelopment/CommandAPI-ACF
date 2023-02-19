@@ -1,9 +1,9 @@
 package co.aikar.commands;
 
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class Clickable {
 
@@ -27,7 +27,7 @@ public class Clickable {
         component = message;
     }
 
-    public void sendToPlayer(ProxiedPlayer player) {
+    public void sendToPlayer(CommandSender player) {
         player.sendMessage(component);
     }
 }
