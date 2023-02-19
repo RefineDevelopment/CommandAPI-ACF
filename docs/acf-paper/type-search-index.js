@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"co.aikar.commands","l":"PaperBrigadierManager"},{"p":"co.aikar.commands","l":"PaperCommandCompletions"},{"p":"co.aikar.commands","l":"PaperCommandContexts"},{"p":"co.aikar.commands","l":"PaperCommandManager"}];updateSearchResults();

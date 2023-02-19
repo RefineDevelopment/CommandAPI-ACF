@@ -1,1 +1,0 @@
-memberSearchIndex = [{"p":"co.aikar.commands","c":"ACFBrigadierManager","l":"manager"}];updateSearchResults();

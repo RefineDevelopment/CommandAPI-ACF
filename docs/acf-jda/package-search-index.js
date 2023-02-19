@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"co.aikar.commands"},{"l":"co.aikar.commands.annotation"}];updateSearchResults();
