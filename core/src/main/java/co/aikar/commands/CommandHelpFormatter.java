@@ -175,7 +175,7 @@ public class CommandHelpFormatter {
                 "{command}", entry.getCommand(),
                 "{commandprefix}", help.getCommandPrefix(),
                 "{parameters}", entry.getParameterSyntax(help.getIssuer()),
-                "{separator}", entry.getDescription().isEmpty() ? "" : "-",
+                "{separator}", entry.getDescription().replace(" ", "").isEmpty() || entry.getDescription().replace(" ", "").equals("") ? "" : "-",
                 "{description}", entry.getDescription()
         };
     }

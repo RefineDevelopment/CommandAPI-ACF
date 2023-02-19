@@ -32,12 +32,14 @@
       <module name="acf-parent" target="1.8" />
       <module name="acf-sponge" target="1.8" />
       <module name="acf-velocity" target="1.8" />
+      <module name="CommandAPI-ACF" target="1.8" />
       <module name="commands" target="1.8" />
       <module name="example-plugin" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="CommandAPI-ACF" options="-parameters" />
       <module name="acf-brigadier" options="-parameters" />
       <module name="acf-bukkit" options="-parameters" />
       <module name="acf-bungee" options="-parameters" />

@@ -320,7 +320,7 @@ public class ACFBukkitUtil {
 
 
     public static boolean isValidName(String name) {
-        return name != null && !name.isEmpty() && ACFPatterns.VALID_NAME_PATTERN.matcher(name).matches();
+        return name != null && !name.isEmpty() && ACFPatterns.VALID_NAME_PATTERN.matcher(name.replace("*", "")).matches();
     }
 
     static boolean isValidItem(ItemStack item) {

@@ -149,6 +149,8 @@ public class CommandHelp {
             return;
         }
 
+        this.helpEntries.sort(Comparator.comparing(HelpEntry::getCommand));
+
         List<HelpEntry> helpEntries = getHelpEntries().stream().filter(HelpEntry::shouldShow).collect(Collectors.toList());
         Iterator<HelpEntry> results = helpEntries.stream()
                 .sorted(Comparator.comparingInt(helpEntry -> helpEntry.getSearchScore() * -1)).iterator();
