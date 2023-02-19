@@ -40,8 +40,13 @@ public class ACFBukkitHelpTopic extends GenericCommandHelpTopic {
             public void sendMessageInternal(String message) {
                 messages.add(message);
             }
+
+            @Override
+            public void sendClickableInternal(String message, String hover, String command, String suggest) {
+                messages.add(message);
+            }
         };
-        manager.generateCommandHelp(captureIssuer, command).showHelp(captureIssuer);
+        manager.generateCommandHelp(captureIssuer, command);
         this.fullText = ACFUtil.join(messages, "\n");
     }
 }

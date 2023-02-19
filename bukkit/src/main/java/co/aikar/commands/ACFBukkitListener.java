@@ -53,13 +53,8 @@ class ACFBukkitListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (this.manager.autoDetectFromClient) {
-            this.manager.readPlayerLocale(player);
-            this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> manager.readPlayerLocale(player), 20);
-        } else {
-            this.manager.setIssuerLocale(player, this.manager.getLocales().getDefaultLocale());
-            this.manager.notifyLocaleChange(this.manager.getCommandIssuer(player), null, this.manager.getLocales().getDefaultLocale());
-        }
+        this.manager.setIssuerLocale(player, this.manager.getLocales().getDefaultLocale());
+        this.manager.notifyLocaleChange(this.manager.getCommandIssuer(player), null, this.manager.getLocales().getDefaultLocale());
     }
 
     @EventHandler

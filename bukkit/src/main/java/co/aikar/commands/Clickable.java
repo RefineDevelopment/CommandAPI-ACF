@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 public class Clickable {
 
     private TextComponent component = null;
+    private String text = "";
 
     public Clickable(String msg, String hoverMsg, String clickString, String suggestString) {
         TextComponent message = new TextComponent(TextComponent.fromLegacyText(msg));
@@ -25,6 +26,7 @@ public class Clickable {
             message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, suggestString));
         }
 
+        text = msg;
         component = message;
     }
 
@@ -32,7 +34,7 @@ public class Clickable {
         if (player instanceof Player) {
             ((Player) player).spigot().sendMessage(component);
         } else {
-            player.sendMessage(component.getText());
+            player.sendMessage(text);
         }
     }
 }
