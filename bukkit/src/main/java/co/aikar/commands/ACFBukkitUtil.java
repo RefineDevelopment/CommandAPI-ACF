@@ -34,8 +34,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -269,11 +267,9 @@ public class ACFBukkitUtil {
         }
         String name = ACFUtil.replace(search, ":confirm", "");
         List<Player> matches = Bukkit.getServer().matchPlayer(name);
-        List<Player> confirmList = new ArrayList<>();
-        findMatches(search, requester, matches, confirmList);
+        findMatches(requester, matches);
 
-
-        if (matches.size() > 1 || confirmList.size() > 1) {
+        if (matches.size() > 1) {
             String allMatches = matches.stream().map(Player::getName).collect(Collectors.joining(", "));
             issuer.sendError(MinecraftMessageKeys.MULTIPLE_PLAYERS_MATCH,
                     "{search}", name, "{all}", allMatches);
@@ -286,36 +282,18 @@ public class ACFBukkitUtil {
                 issuer.sendError(MinecraftMessageKeys.IS_NOT_A_VALID_NAME, "{name}", name);
                 return null;
             }
-            Player player = ACFUtil.getFirstElement(confirmList);
-            if (player == null) {
-                issuer.sendError(MinecraftMessageKeys.NO_PLAYER_FOUND_SERVER, "{search}", name);
-                return null;
-            } else {
-                issuer.sendInfo(MinecraftMessageKeys.PLAYER_IS_VANISHED_CONFIRM, "{vanished}", player.getName());
-                return null;
-            }
+
+            issuer.sendError(MinecraftMessageKeys.NO_PLAYER_FOUND_SERVER, "{search}", name);
+            return null;
         }
 
         return matches.get(0);
     }
 
-    private static void findMatches(String search, CommandSender requester, List<Player> matches, List<Player> confirmList) {
+    private static void findMatches(CommandSender requester, List<Player> matches) {
         // Remove vanished players from smart matching.
-        Iterator<Player> iter = matches.iterator();
         //noinspection Duplicates
-        while (iter.hasNext()) {
-            Player player = iter.next();
-            if (requester instanceof Player && !((Player) requester).canSee(player)) {
-                if (requester.hasPermission("acf.seevanish")) {
-                    if (!search.endsWith(":confirm")) {
-                        confirmList.add(player);
-                        iter.remove();
-                    }
-                } else {
-                    iter.remove();
-                }
-            }
-        }
+        matches.removeIf(player -> requester instanceof Player && !((Player) requester).canSee(player));
     }
 
 

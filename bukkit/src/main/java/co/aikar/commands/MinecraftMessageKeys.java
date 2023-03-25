@@ -31,7 +31,6 @@ import java.util.Locale;
 public enum MinecraftMessageKeys implements MessageKeyProvider {
     INVALID_WORLD,
     YOU_MUST_BE_HOLDING_ITEM,
-    PLAYER_IS_VANISHED_CONFIRM,
     USERNAME_TOO_SHORT,
     IS_NOT_A_VALID_NAME,
     MULTIPLE_PLAYERS_MATCH,
