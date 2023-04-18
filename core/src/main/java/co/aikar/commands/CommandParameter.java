@@ -169,10 +169,6 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
         return name;
     }
 
-    public String getDisplayName(CommandIssuer issuer) {
-        return name;
-    }
-
     public CommandManager getManager() {
         return manager;
     }
@@ -266,16 +262,11 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
     }
 
     public String getSyntax() {
-        return getSyntax(null);
-    }
-
-    public String getSyntax(CommandIssuer issuer) {
-        if (commandIssuer) return null;
         if (syntax == null) {
             if (isOptionalInput) {
-                return "[" + getDisplayName(issuer) + "]";
+                return "[" + name + "]";
             } else if (requiresInput) {
-                return "<" + getDisplayName(issuer) + ">";
+                return "<" + name + ">";
             }
         }
         return syntax;

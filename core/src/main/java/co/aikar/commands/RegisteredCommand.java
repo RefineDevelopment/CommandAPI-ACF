@@ -332,16 +332,11 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
     public String getPrefSubCommand() {
         return prefSubCommand;
     }
-
     public String getSyntaxText() {
-        return getSyntaxText(null);
-    }
-
-    public String getSyntaxText(CommandIssuer issuer) {
         if (syntaxText != null) return syntaxText;
         StringBuilder syntaxBuilder = new StringBuilder(64);
         for (CommandParameter<?> parameter : parameters) {
-            String syntax = parameter.getSyntax(issuer);
+            String syntax = parameter.getSyntax();
             if (syntax != null) {
                 if (syntaxBuilder.length() > 0) {
                     syntaxBuilder.append(' ');

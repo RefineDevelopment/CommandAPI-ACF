@@ -794,7 +794,7 @@ public abstract class BaseCommand {
     public void showSyntax(CommandIssuer issuer, RegisteredCommand<?> cmd) {
         issuer.sendMessage(MessageType.SYNTAX, MessageConfig.IMP.ERROR.INVALID_SYNTAX
                 .replace("<command>", manager.getCommandPrefix(issuer) + cmd.command)
-                .replace("<syntax>", cmd.getSyntaxText(issuer)));
+                .replace("<syntax>", cmd.getSyntaxText()));
     }
 
     public boolean hasPermission(Object issuer) {

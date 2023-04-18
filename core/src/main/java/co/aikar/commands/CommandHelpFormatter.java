@@ -97,14 +97,14 @@ public class CommandHelpFormatter {
     public String getReplacedFormat(CommandHelp help, HelpEntry entry) {
         if (entry.getDescription().isEmpty()) {
             return MessageConfig.IMP.HELP.FORMAT
-                    .replace("<command>", help.getCommandName())
+                    .replace("<command>", entry.getCommand())
                     .replace("<commandPrefix>", help.getCommandPrefix())
-                    .replace("<parameters>", entry.getParameterSyntax(help.getIssuer()));
+                    .replace("<parameters>", entry.getParameterSyntax());
         } else {
             return MessageConfig.IMP.HELP.FORMAT_WITH_DESCRIPTION
-                    .replace("<command>", help.getCommandName())
+                    .replace("<command>", entry.getCommand())
                     .replace("<commandPrefix>", help.getCommandPrefix())
-                    .replace("<parameters>", entry.getParameterSyntax(help.getIssuer()))
+                    .replace("<parameters>", entry.getParameterSyntax())
                     .replace("<description>", entry.getDescription());
         }
     }

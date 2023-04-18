@@ -107,7 +107,7 @@ public class CommandHelp {
             if (pattern.matcher(help.getDescription()).matches()) {
                 searchScore += 2;
             }
-            if (pattern.matcher(help.getParameterSyntax(issuer)).matches()) {
+            if (pattern.matcher(help.getParameterSyntax()).matches()) {
                 searchScore++;
             }
             if (help.getSearchTags() != null && pattern.matcher(help.getSearchTags()).matches()) {
