@@ -49,19 +49,4 @@ class ACFBukkitListener implements Listener {
         }
         manager.unregisterCommands();
     }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        this.manager.setIssuerLocale(player, this.manager.getLocales().getDefaultLocale());
-        this.manager.notifyLocaleChange(this.manager.getCommandIssuer(player), null, this.manager.getLocales().getDefaultLocale());
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent quitEvent) {
-        //cleanup
-        UUID playerUniqueId = quitEvent.getPlayer().getUniqueId();
-        manager.issuersLocale.remove(playerUniqueId);
-        manager.issuersLocaleString.remove(playerUniqueId);
-    }
 }

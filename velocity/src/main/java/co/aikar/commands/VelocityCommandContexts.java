@@ -23,6 +23,7 @@
 
 package co.aikar.commands;
 
+import co.aikar.commands.config.impl.MessageConfig;
 import co.aikar.commands.velocity.contexts.OnlinePlayer;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
@@ -49,7 +50,7 @@ public class VelocityCommandContexts extends CommandContexts<VelocityCommandExec
         registerIssuerAwareContext(Player.class, (c) -> {
             Player proxiedPlayer = c.getSender() instanceof Player ? (Player) c.getSender() : null;
             if (proxiedPlayer == null && !c.isOptional()) {
-                throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.PLAYER_ONLY, false);
             }
             return proxiedPlayer;
         });
@@ -72,7 +73,7 @@ public class VelocityCommandContexts extends CommandContexts<VelocityCommandExec
                 String valid = colors.map(color -> "<c2>" + ACFUtil.simplifyString(color.toString()) + "</c2>")
                         .collect(Collectors.joining("<c1>,</c1> "));
 
-                throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_ONE_OF, "{valid}", valid);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLEASE_SPECIFY_ONE_OF.replace("<valid>", valid));
             }
             return match;
         });

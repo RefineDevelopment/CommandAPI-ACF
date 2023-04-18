@@ -31,6 +31,7 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.HelpSearchTags;
 import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Syntax;
+import co.aikar.commands.config.impl.MessageConfig;
 import co.aikar.commands.contexts.ContextResolver;
 import org.jetbrains.annotations.Nullable;
 
@@ -183,10 +184,10 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
             commandHelp.showHelp(sender);
         } else if (e instanceof InvalidCommandArgument) {
             InvalidCommandArgument invalidCommandArg = (InvalidCommandArgument) e;
-            if (invalidCommandArg.key != null) {
-                sender.sendMessage(MessageType.ERROR, invalidCommandArg.key, invalidCommandArg.replacements);
+            if (invalidCommandArg.getMessage() != null) {
+                sender.sendError(invalidCommandArg.getMessage());
             } else if (e.getMessage() != null && !e.getMessage().isEmpty()) {
-                sender.sendMessage(MessageType.ERROR, MessageKeys.ERROR_PREFIX, "{message}", e.getMessage());
+                sender.sendError(e.getMessage());
             }
             if (invalidCommandArg.showSyntax) {
                 scope.showSyntax(sender, this);
@@ -194,7 +195,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
         } else {
             try {
                 if (!this.manager.handleUncaughtException(scope, this, sender, args, e)) {
-                    sender.sendMessage(MessageType.ERROR, MessageKeys.ERROR_PERFORMING_COMMAND);
+                    sender.sendError(MessageConfig.IMP.ERROR.ERROR_PERFORMING_COMMAND);
                 }
                 boolean hasExceptionHandler = this.manager.defaultExceptionHandler != null || this.scope.getExceptionHandler() != null;
                 if (!hasExceptionHandler || this.manager.logUnhandledExceptions) {
@@ -258,7 +259,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
                 }
             } else {
                 if (!this.manager.hasPermission(sender, parameterPermissions)) {
-                    sender.sendMessage(MessageType.ERROR, MessageKeys.PERMISSION_DENIED_PARAMETER, "{param}", parameterName);
+                    sender.sendError(MessageConfig.IMP.ERROR.NO_PERMISSION);
                     throw new InvalidCommandArgument(false);
                 }
             }
@@ -282,8 +283,8 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
                     }
                 }
                 if (!possible.contains(arg.toLowerCase(Locale.ENGLISH))) {
-                    throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_ONE_OF,
-                            "{valid}", ACFUtil.join(possible, ", "));
+                    String msg = MessageConfig.IMP.ERROR.PLEASE_SPECIFY_ONE_OF.replace("<valid>", ACFUtil.join(possible, ", "));
+                    throw new InvalidCommandArgument(msg);
                 }
             }
 

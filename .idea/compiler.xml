@@ -21,16 +21,8 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="acf" target="1.8" />
-      <module name="acf-brigadier" target="1.8" />
-      <module name="acf-bukkit" target="1.8" />
-      <module name="acf-bungee" target="1.8" />
-      <module name="acf-core" target="1.8" />
       <module name="acf-example" target="1.8" />
-      <module name="acf-jda" target="1.8" />
-      <module name="acf-paper" target="1.8" />
-      <module name="acf-parent" target="1.8" />
       <module name="acf-sponge" target="1.8" />
-      <module name="acf-velocity" target="1.8" />
       <module name="CommandAPI-ACF" target="1.8" />
       <module name="commands" target="1.8" />
       <module name="example-plugin" target="1.8" />
@@ -45,7 +37,7 @@
       <module name="acf-core" options="-parameters" />
       <module name="acf-jda" options="-parameters" />
       <module name="acf-paper" options="-parameters" />
-      <module name="acf-parent" options="" />
+      <module name="acf-parent" options="-parameters" />
       <module name="acf-sponge" options="-parameters" />
       <module name="acf-velocity" options="-parameters" />
       <module name="example-plugin" options="-parameters" />

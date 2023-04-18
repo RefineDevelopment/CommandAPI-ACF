@@ -24,6 +24,7 @@
 package co.aikar.commands;
 
 import co.aikar.commands.apachecommonslang.ApacheCommonsExceptionUtil;
+import co.aikar.commands.config.impl.MessageConfig;
 import co.aikar.timings.lib.MCTiming;
 import co.aikar.timings.lib.TimingManager;
 import org.bukkit.Bukkit;
@@ -69,8 +70,6 @@ import java.util.regex.Pattern;
 public class BukkitCommandManager extends CommandManager<
         CommandSender,
         BukkitCommandIssuer,
-        ChatColor,
-        BukkitMessageFormatter,
         BukkitCommandExecutionContext,
         BukkitConditionContext
         > {
@@ -79,7 +78,6 @@ public class BukkitCommandManager extends CommandManager<
     protected final Plugin plugin;
     private final CommandMap commandMap;
     private final TimingManager timingManager;
-    private final BukkitTask localeTask;
     private final Logger logger;
     public final Integer mcMinorVersion;
     public final Integer mcPatchVersion;
@@ -88,22 +86,18 @@ public class BukkitCommandManager extends CommandManager<
     protected BukkitCommandContexts contexts;
     protected BukkitCommandCompletions completions;
     MCTiming commandTiming;
-    protected BukkitLocales locales;
-    protected Map<UUID, String> issuersLocaleString = new ConcurrentHashMap<>();
-    private boolean cantReadLocale = false;
     protected boolean autoDetectFromClient = true;
 
     public BukkitCommandManager(Plugin plugin) {
         this.plugin = plugin;
+
+        new MessageConfig().createConfig(plugin.getDescription().getName());
+
         String prefix = this.plugin.getDescription().getPrefix();
         this.logger = Logger.getLogger(prefix != null ? prefix : this.plugin.getName());
         this.timingManager = TimingManager.of(plugin);
         this.commandTiming = this.timingManager.of("Commands");
         this.commandMap = hookCommandMap();
-        this.formatters.put(MessageType.ERROR, defaultFormatter = new BukkitMessageFormatter(ChatColor.RED, ChatColor.YELLOW, ChatColor.RED));
-        this.formatters.put(MessageType.SYNTAX, new BukkitMessageFormatter(ChatColor.YELLOW, ChatColor.GREEN, ChatColor.WHITE));
-        this.formatters.put(MessageType.INFO, new BukkitMessageFormatter(ChatColor.BLUE, ChatColor.DARK_GREEN, ChatColor.GREEN));
-        this.formatters.put(MessageType.HELP, new BukkitMessageFormatter(ChatColor.AQUA, ChatColor.GREEN, ChatColor.YELLOW));
         Pattern versionPattern = Pattern.compile("\\(MC: (\\d)\\.(\\d+)\\.?(\\d+?)?\\)");
         Matcher matcher = versionPattern.matcher(Bukkit.getVersion());
         if (matcher.find()) {
@@ -113,6 +107,7 @@ public class BukkitCommandManager extends CommandManager<
             this.mcMinorVersion = -1;
             this.mcPatchVersion = -1;
         }
+
         Bukkit.getHelpMap().registerHelpTopicFactory(BukkitRootCommand.class, command -> {
             if (hasUnstableAPI("help")) {
                 return new ACFBukkitHelpTopic(this, (BukkitRootCommand) command);
@@ -122,14 +117,6 @@ public class BukkitCommandManager extends CommandManager<
         });
 
         Bukkit.getPluginManager().registerEvents(new ACFBukkitListener(this, plugin), plugin);
-
-        getLocales(); // auto load locales
-        this.localeTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            if (this.cantReadLocale || !this.autoDetectFromClient) {
-                return;
-            }
-            Bukkit.getOnlinePlayers().forEach(this::readPlayerLocale);
-        }, 30, 30);
 
         registerDependency(plugin.getClass(), plugin);
         registerDependency(Logger.class, plugin.getLogger());
@@ -197,17 +184,6 @@ public class BukkitCommandManager extends CommandManager<
         }
         return completions;
     }
-
-
-    @Override
-    public BukkitLocales getLocales() {
-        if (this.locales == null) {
-            this.locales = new BukkitLocales(this);
-            this.locales.loadLanguages();
-        }
-        return locales;
-    }
-
 
     @Override
     public boolean hasRegisteredCommands() {
@@ -300,44 +276,6 @@ public class BukkitCommandManager extends CommandManager<
         return null;
     }
 
-    public Locale setPlayerLocale(Player player, Locale locale) {
-        return this.setIssuerLocale(player, locale);
-    }
-
-    void readPlayerLocale(Player player) {
-        if (!player.isOnline() || cantReadLocale) {
-            return;
-        }
-        try {
-            Field entityField = getEntityField(player);
-            if (entityField == null) {
-                return;
-            }
-            Object nmsPlayer = entityField.get(player);
-            if (nmsPlayer != null) {
-                Field localeField = nmsPlayer.getClass().getDeclaredField("locale");
-                localeField.setAccessible(true);
-                Object localeString = localeField.get(nmsPlayer);
-                if (localeString instanceof String) {
-                    UUID playerUniqueId = player.getUniqueId();
-                    if (!localeString.equals(issuersLocaleString.get(playerUniqueId))) {
-                        String[] split = ACFPatterns.UNDERSCORE.split((String) localeString);
-                        Locale locale = split.length > 1 ? new Locale(split[0], split[1]) : new Locale(split[0]);
-                        Locale prev = issuersLocale.put(playerUniqueId, locale);
-                        issuersLocaleString.put(playerUniqueId, (String) localeString);
-                        if (!Objects.equals(locale, prev)) {
-                            this.notifyLocaleChange(getCommandIssuer(player), prev, locale);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            cantReadLocale = true;
-            this.localeTask.cancel();
-            this.log(LogLevel.INFO, "Can't read players locale, you will be unable to automatically detect players language. Only Bukkit 1.7+ is supported for this.", e);
-        }
-    }
-
     public TimingManager getTimings() {
         return timingManager;
     }
@@ -390,13 +328,6 @@ public class BukkitCommandManager extends CommandManager<
                 logger.log(logLevel, LogLevel.LOG_PREFIX + line);
             }
         }
-    }
-
-    public boolean usePerIssuerLocale(boolean usePerIssuerLocale, boolean autoDetectFromClient) {
-        boolean old = this.usePerIssuerLocale;
-        this.usePerIssuerLocale = usePerIssuerLocale;
-        this.autoDetectFromClient = autoDetectFromClient;
-        return old;
     }
 
     @Override

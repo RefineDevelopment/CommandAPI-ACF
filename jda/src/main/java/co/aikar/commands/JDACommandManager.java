@@ -21,8 +21,6 @@ import java.util.logging.Logger;
 public class JDACommandManager extends CommandManager<
         MessageReceivedEvent,
         JDACommandEvent,
-        String,
-        MessageFormatter<String>,
         JDACommandExecutionContext,
         JDAConditionContext
         > {
@@ -30,7 +28,6 @@ public class JDACommandManager extends CommandManager<
     private final JDA jda;
     protected JDACommandCompletions completions;
     protected JDACommandContexts contexts;
-    protected JDALocales locales;
     protected Map<String, JDARootCommand> commands = new HashMap<>();
     private Logger logger;
     private CommandConfig defaultConfig;
@@ -51,7 +48,6 @@ public class JDACommandManager extends CommandManager<
         jda.addEventListener(new JDAListener(this));
         this.defaultConfig = options.defaultConfig == null ? new JDACommandConfig() : options.defaultConfig;
         this.configProvider = options.configProvider;
-        this.defaultFormatter = new JDAMessageFormatter();
         this.completions = new JDACommandCompletions(this);
         this.logger = Logger.getLogger(this.getClass().getSimpleName());
 
@@ -200,15 +196,6 @@ public class JDACommandManager extends CommandManager<
     @Override
     public Collection<RootCommand> getRegisteredRootCommands() {
         return Collections.unmodifiableCollection(commands.values());
-    }
-
-    @Override
-    public Locales getLocales() {
-        if (this.locales == null) {
-            this.locales = new JDALocales(this);
-            this.locales.loadLanguages();
-        }
-        return this.locales;
     }
 
     @Override

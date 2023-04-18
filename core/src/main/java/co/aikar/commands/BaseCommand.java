@@ -36,6 +36,7 @@ import co.aikar.commands.annotation.PreCommand;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.UnknownHandler;
 import co.aikar.commands.apachecommonslang.ApacheCommonsLangUtil;
+import co.aikar.commands.config.impl.MessageConfig;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import org.jetbrains.annotations.Nullable;
@@ -119,7 +120,7 @@ public abstract class BaseCommand {
     /**
      * The manager this is registered to
      */
-    CommandManager<?, ?, ?, ?, ?, ?> manager = null;
+    CommandManager<?, ?, ?, ?> manager = null;
 
     /**
      * The command which owns this. This may be null if there are no owners.
@@ -577,7 +578,7 @@ public abstract class BaseCommand {
             List<String> sargs = Arrays.asList(args);
             cmd.invoke(issuer, sargs, commandOperationContext);
         } else {
-            issuer.sendMessage(MessageType.ERROR, MessageKeys.PERMISSION_DENIED);
+            issuer.sendError(MessageConfig.IMP.ERROR.NO_PERMISSION);
         }
     }
 
@@ -779,7 +780,7 @@ public abstract class BaseCommand {
     }
 
     public void help(CommandIssuer issuer, String[] args) {
-        issuer.sendMessage(MessageType.ERROR, MessageKeys.UNKNOWN_COMMAND);
+        issuer.sendError(MessageConfig.IMP.ERROR.UNKNOWN_COMMAND);
     }
 
     public void doHelp(Object issuer, String... args) {
@@ -791,10 +792,9 @@ public abstract class BaseCommand {
     }
 
     public void showSyntax(CommandIssuer issuer, RegisteredCommand<?> cmd) {
-        issuer.sendMessage(MessageType.SYNTAX, MessageKeys.INVALID_SYNTAX,
-                "{command}", manager.getCommandPrefix(issuer) + cmd.command,
-                "{syntax}", cmd.getSyntaxText(issuer)
-        );
+        issuer.sendMessage(MessageType.SYNTAX, MessageConfig.IMP.ERROR.INVALID_SYNTAX
+                .replace("<command>", manager.getCommandPrefix(issuer) + cmd.command)
+                .replace("<syntax>", cmd.getSyntaxText(issuer)));
     }
 
     public boolean hasPermission(Object issuer) {

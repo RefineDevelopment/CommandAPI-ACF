@@ -23,6 +23,7 @@
 
 package co.aikar.commands;
 
+import co.aikar.commands.config.impl.MessageConfig;
 import com.google.common.collect.SetMultimap;
 
 import java.util.ArrayList;
@@ -44,7 +45,6 @@ public class CommandHelp {
     private int page = 1;
     private int perPage;
     List<String> search;
-    private Set<HelpEntry> selectedEntry = new HashSet<>();
     private int totalResults;
     private int totalPages;
     private boolean lastPage;
@@ -122,13 +122,12 @@ public class CommandHelp {
     }
 
     public boolean testExactMatch(String command) {
-        selectedEntry.clear();
         for (HelpEntry helpEntry : helpEntries) {
             if (helpEntry.getCommand().endsWith(" " + command)) {
-                selectedEntry.add(helpEntry);
+                return true;
             }
         }
-        return !selectedEntry.isEmpty();
+        return false;
     }
 
     public void showHelp() {
@@ -137,17 +136,6 @@ public class CommandHelp {
 
     public void showHelp(CommandIssuer issuer) {
         CommandHelpFormatter formatter = manager.getHelpFormatter();
-        if (!selectedEntry.isEmpty()) {
-            HelpEntry first = ACFUtil.getFirstElement(selectedEntry);
-            formatter.printDetailedHelpHeader(this, issuer, first);
-
-            for (HelpEntry helpEntry : selectedEntry) {
-                formatter.showDetailedHelp(this, helpEntry);
-            }
-
-            formatter.printDetailedHelpFooter(this, issuer, first);
-            return;
-        }
 
         this.helpEntries.sort(Comparator.comparing(HelpEntry::getCommand));
 
@@ -155,7 +143,7 @@ public class CommandHelp {
         Iterator<HelpEntry> results = helpEntries.stream().sorted(Comparator.comparingInt(helpEntry -> helpEntry.getSearchScore() * -1)).iterator();
 
         if (!results.hasNext()) {
-            issuer.sendMessage(MessageType.ERROR, MessageKeys.NO_COMMAND_MATCHED_SEARCH, "{search}", ACFUtil.join(this.search, " "));
+            issuer.sendError(MessageConfig.IMP.HELP.NO_COMMANDS_MATCHED_SEARCH.replace("<search>", ACFUtil.join(this.search, " ")));
             helpEntries = getHelpEntries();
             results = helpEntries.iterator();
         }
@@ -165,8 +153,9 @@ public class CommandHelp {
         int max = min + this.perPage;
         this.totalPages = (int) Math.ceil((float) totalResults / (float) this.perPage);
         int i = 0;
+
         if (min >= totalResults) {
-            issuer.sendMessage(MessageType.HELP, MessageKeys.HELP_NO_RESULTS);
+            issuer.sendMessage(MessageType.HELP, MessageConfig.IMP.HELP.NO_RESULTS);
             return;
         }
 
@@ -235,10 +224,6 @@ public class CommandHelp {
 
     public List<String> getSearch() {
         return search;
-    }
-
-    public Set<HelpEntry> getSelectedEntry() {
-        return selectedEntry;
     }
 
     public int getTotalResults() {

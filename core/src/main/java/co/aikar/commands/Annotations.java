@@ -91,9 +91,9 @@ class Annotations<M extends CommandManager> extends AnnotationLookups {
             value = manager.getCommandReplacements().replace(value);
         }
         if (hasOption(options, LOWERCASE)) {
-            value = value.toLowerCase(manager.getLocales().getDefaultLocale());
+            value = value.toLowerCase();
         } else if (hasOption(options, UPPERCASE)) {
-            value = value.toUpperCase(manager.getLocales().getDefaultLocale());
+            value = value.toUpperCase();
         }
 
         // validation

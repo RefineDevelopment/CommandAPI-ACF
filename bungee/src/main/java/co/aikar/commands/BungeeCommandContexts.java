@@ -26,6 +26,7 @@ package co.aikar.commands;
 
 import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.bungee.contexts.OnlinePlayer;
+import co.aikar.commands.config.impl.MessageConfig;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -47,7 +48,7 @@ public class BungeeCommandContexts extends CommandContexts<BungeeCommandExecutio
         registerIssuerAwareContext(ProxiedPlayer.class, (c) -> {
             ProxiedPlayer proxiedPlayer = c.getSender() instanceof ProxiedPlayer ? (ProxiedPlayer) c.getSender() : null;
             if (proxiedPlayer == null && !c.hasAnnotation(Optional.class)) {
-                throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.PLAYER_ONLY, false);
             }
             return proxiedPlayer;
         });
@@ -79,7 +80,7 @@ public class BungeeCommandContexts extends CommandContexts<BungeeCommandExecutio
                         .map(color -> "<c2>" + ACFUtil.simplifyString(color.name()) + "</c2>")
                         .collect(Collectors.joining("<c1>,</c1> "));
 
-                throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_ONE_OF, "{valid}", valid);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLEASE_SPECIFY_ONE_OF.replace("<valid>", valid));
             }
             return match;
         });

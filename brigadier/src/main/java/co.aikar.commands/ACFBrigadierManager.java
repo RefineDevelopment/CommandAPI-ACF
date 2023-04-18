@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 @UnstableAPI
 public class ACFBrigadierManager<S> {
 
-    protected final CommandManager<?, ?, ?, ?, ?, ?> manager;
+    protected final CommandManager<?, ?, ?, ?> manager;
 
     private final Map<Class<?>, ArgumentType<?>> arguments = new HashMap<>();
 
@@ -38,7 +38,7 @@ public class ACFBrigadierManager<S> {
      *
      * @param manager
      */
-    ACFBrigadierManager(CommandManager<?, ?, ?, ?, ?, ?> manager) {
+    ACFBrigadierManager(CommandManager<?, ?, ?, ?> manager) {
         manager.verifyUnstableAPI("brigadier");
 
         this.manager = manager;

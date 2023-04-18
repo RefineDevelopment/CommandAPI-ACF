@@ -23,8 +23,7 @@
 
 package co.aikar.commands;
 
-import co.aikar.locales.MessageKey;
-import co.aikar.locales.MessageKeyProvider;
+import co.aikar.commands.config.impl.MessageConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -50,7 +49,7 @@ public interface CommandIssuer {
      * @param message
      */
     default void sendMessage(String message) {
-        getManager().sendMessage(this, MessageType.INFO, MessageKeys.INFO_MESSAGE, "{message}", message);
+        getManager().sendMessage(this, MessageType.HELP, MessageConfig.IMP.FORMATS.INFO_MESSAGE.replace("<message>", message));
     }
 
     /**
@@ -65,29 +64,18 @@ public interface CommandIssuer {
      */
     boolean hasPermission(String permission);
 
-    default void sendError(MessageKeyProvider key, String... replacements) {
-        sendMessage(MessageType.ERROR, key.getMessageKey(), replacements);
+
+    default void sendSyntax(String message) {
+        sendMessage(MessageType.SYNTAX, message);
     }
-    default void sendSyntax(MessageKeyProvider key, String... replacements) {
-        sendMessage(MessageType.SYNTAX, key.getMessageKey(), replacements);
+    default void sendInfo(String message) {
+        sendMessage(MessageType.INFO, MessageConfig.IMP.FORMATS.INFO_MESSAGE.replace("<message>", message));
     }
-    default void sendInfo(MessageKeyProvider key, String... replacements) {
-        sendMessage(MessageType.INFO, key.getMessageKey(), replacements);
+    default void sendError(String message) {
+        sendMessage(MessageType.ERROR, MessageConfig.IMP.FORMATS.ERROR_MESSAGE.replace("<message>", message));
     }
-    default void sendError(MessageKey key, String... replacements) {
-        sendMessage(MessageType.ERROR, key, replacements);
-    }
-    default void sendSyntax(MessageKey key, String... replacements) {
-        sendMessage(MessageType.SYNTAX, key, replacements);
-    }
-    default void sendInfo(MessageKey key, String... replacements) {
-        sendMessage(MessageType.INFO, key, replacements);
-    }
-    default void sendMessage(MessageType type, MessageKeyProvider key, String... replacements) {
-        sendMessage(type, key.getMessageKey(), replacements);
-    }
-    default void sendMessage(MessageType type, MessageKey key, String... replacements) {
-        getManager().sendMessage(this, type, key, replacements);
+    default void sendMessage(MessageType type, String message) {
+        getManager().sendMessage(this, type, message);
     }
 
     /**

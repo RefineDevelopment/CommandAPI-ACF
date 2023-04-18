@@ -23,6 +23,7 @@
 
 package co.aikar.commands;
 
+import co.aikar.commands.config.impl.MessageConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -271,19 +272,20 @@ public class ACFBukkitUtil {
 
         if (matches.size() > 1) {
             String allMatches = matches.stream().map(Player::getName).collect(Collectors.joining(", "));
-            issuer.sendError(MinecraftMessageKeys.MULTIPLE_PLAYERS_MATCH,
-                    "{search}", name, "{all}", allMatches);
+            issuer.sendError(MessageConfig.IMP.ERROR.PLAYER.MULTIPLE_PLAYERS_MATCH
+                    .replace("<search>", name)
+                    .replace("<all>", allMatches));
             return null;
         }
 
         //noinspection Duplicates
         if (matches.isEmpty()) {
             if (!isValidName(name)) {
-                issuer.sendError(MinecraftMessageKeys.IS_NOT_A_VALID_NAME, "{name}", name);
+                issuer.sendError(MessageConfig.IMP.ERROR.PLAYER.INVALID_USERNAME.replace("<name>", name));
                 return null;
             }
 
-            issuer.sendError(MinecraftMessageKeys.NO_PLAYER_FOUND_SERVER, "{search}", name);
+            issuer.sendError(MessageConfig.IMP.ERROR.PLAYER.NO_ONLINE_PLAYER_FOUND.replace("<search>", name));
             return null;
         }
 

@@ -24,6 +24,7 @@
 package co.aikar.commands;
 
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
+import co.aikar.commands.config.impl.MessageConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -73,10 +74,7 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
                 }
             }
             if (players.isEmpty() && !c.hasFlag("allowempty")) {
-                issuer.sendError(MinecraftMessageKeys.NO_PLAYER_FOUND_SERVER,
-                        "{search}", search);
-
-                throw new InvalidCommandArgument(false);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.NO_ONLINE_PLAYER_FOUND.replace("<search>", search), false);
             }
             return players.toArray(new OnlinePlayer[players.size()]);
         });
@@ -90,7 +88,7 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
                 world = ((Entity) c.getSender()).getWorld();
             }
             if (world == null) {
-                throw new InvalidCommandArgument(MinecraftMessageKeys.INVALID_WORLD);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LOCATION.INVALID_WORLD);
             }
             return world;
         });
@@ -102,11 +100,11 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
             if (!c.hasFlag("other")) {
                 Player player = isPlayerSender ? (Player) sender : null;
                 if (player == null && !isOptional) {
-                    throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
+                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.PLAYER_ONLY, false);
                 }
                 PlayerInventory inventory = player != null ? player.getInventory() : null;
                 if (inventory != null && c.hasFlag("itemheld") && !ACFBukkitUtil.isValidItem(inventory.getItem(inventory.getHeldItemSlot()))) {
-                    throw new InvalidCommandArgument(MinecraftMessageKeys.YOU_MUST_BE_HOLDING_ITEM, false);
+                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_HOLD_ITEM, false);
                 }
                 return player;
             } else {
@@ -116,7 +114,7 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
                         if (isPlayerSender) {
                             return (Player) sender;
                         } else {
-                            throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
+                            throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.PLAYER_ONLY, false);
                         }
                     } else {
                         return null;
@@ -137,8 +135,7 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
                 try {
                     uuid = UUID.fromString(name);
                 } catch (IllegalArgumentException e) {
-                    throw new InvalidCommandArgument(MinecraftMessageKeys.NO_PLAYER_FOUND_OFFLINE,
-                            "{search}", name);
+                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.NO_OFFLINE_PLAYER_FOUND.replace("<search>", name));
                 }
                 offlinePlayer = Bukkit.getOfflinePlayer(uuid);
             } else {
@@ -146,10 +143,9 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
             }
             if (offlinePlayer == null || (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline())) {
                 if (!c.hasFlag("uuid") && !isValidName(name)) {
-                    throw new InvalidCommandArgument(MinecraftMessageKeys.IS_NOT_A_VALID_NAME, "{name}", name);
+                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.INVALID_USERNAME.replace("<name>", name));
                 }
-                throw new InvalidCommandArgument(MinecraftMessageKeys.NO_PLAYER_FOUND_OFFLINE,
-                        "{search}", name);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.NO_OFFLINE_PLAYER_FOUND.replace("<search>", name));
             }
             return offlinePlayer;
         });
@@ -168,11 +164,9 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
 
             ChatColor match = ACFUtil.simpleMatch(ChatColor.class, first);
             if (match == null) {
-                String valid = colors
-                        .map(color -> "<c2>" + ACFUtil.simplifyString(color.name()) + "</c2>")
-                        .collect(Collectors.joining("<c1>,</c1> "));
+                String valid = colors.map(color -> "<c2>" + ACFUtil.simplifyString(color.name()) + "</c2>").collect(Collectors.joining("<c1>,</c1> "));
 
-                throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_ONE_OF, "{valid}", valid);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLEASE_SPECIFY_ONE_OF.replace("<valid>", valid));
             }
             return match;
         });
@@ -184,7 +178,7 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
                 throw new InvalidCommandArgument(true);
             }
             if (split.length < 2 && !(sender instanceof Player) && !(sender instanceof BlockCommandSender)) {
-                throw new InvalidCommandArgument(MinecraftMessageKeys.LOCATION_PLEASE_SPECIFY_WORLD);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LOCATION.SPECIFY_WORLD);
             }
             final String world;
             final String rest;
@@ -207,7 +201,7 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
             boolean rel = rest.startsWith("~");
             split = ACFPatterns.COMMA.split(rel ? rest.substring(1) : rest);
             if (split.length < 3) {
-                throw new InvalidCommandArgument(MinecraftMessageKeys.LOCATION_PLEASE_SPECIFY_XYZ);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LOCATION.SPECIFY_COORDS);
             }
 
             Double x = ACFUtil.parseDouble(split[0], rel ? 0.0D : null);
@@ -219,16 +213,16 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
                 y += sourceLoc.getY();
                 z += sourceLoc.getZ();
             } else if (rel) {
-                throw new InvalidCommandArgument(MinecraftMessageKeys.LOCATION_CONSOLE_NOT_RELATIVE);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LOCATION.CONSOLE_RELATIVE);
             }
 
             if (x == null || y == null || z == null) {
-                throw new InvalidCommandArgument(MinecraftMessageKeys.LOCATION_PLEASE_SPECIFY_XYZ);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LOCATION.SPECIFY_COORDS);
             }
 
             World worldObj = Bukkit.getWorld(world);
             if (worldObj == null) {
-                throw new InvalidCommandArgument(MinecraftMessageKeys.INVALID_WORLD);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LOCATION.INVALID_WORLD);
             }
 
             if (split.length >= 5) {
@@ -236,7 +230,7 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
                 Float pitch = ACFUtil.parseFloat(split[4]);
 
                 if (pitch == null || yaw == null) {
-                    throw new InvalidCommandArgument(MinecraftMessageKeys.LOCATION_PLEASE_SPECIFY_XYZ);
+                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LOCATION.SPECIFY_COORDS);
                 }
                 return new Location(worldObj, x, y, z, yaw, pitch);
             } else {

@@ -18,20 +18,4 @@ public class ACFBungeeListener implements Listener {
         this.manager = manager;
         this.plugin = plugin;
     }
-
-    @EventHandler
-    public void onPlayerJoin(PostLoginEvent loginEvent) {
-        ProxiedPlayer player = loginEvent.getPlayer();
-
-        //the client settings are sent after a successful login
-        Runnable task = () -> manager.readLocale(player);
-        plugin.getProxy().getScheduler().schedule(plugin, task, 1, TimeUnit.SECONDS);
-    }
-
-    @EventHandler
-    public void onDisconnect(PlayerDisconnectEvent disconnectEvent) {
-        //cleanup
-        ProxiedPlayer player = disconnectEvent.getPlayer();
-        manager.issuersLocale.remove(player.getUniqueId());
-    }
 }

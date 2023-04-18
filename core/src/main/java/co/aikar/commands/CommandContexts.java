@@ -26,6 +26,7 @@ package co.aikar.commands;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Split;
 import co.aikar.commands.annotation.Values;
+import co.aikar.commands.config.impl.MessageConfig;
 import co.aikar.commands.contexts.ContextResolver;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import co.aikar.commands.contexts.IssuerOnlyContextResolver;
@@ -51,7 +52,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, Short.MIN_VALUE, Short.MAX_VALUE).shortValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(short.class, (c) -> {
@@ -59,7 +60,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, Short.MIN_VALUE, Short.MAX_VALUE).shortValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(Integer.class, (c) -> {
@@ -67,7 +68,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, Integer.MIN_VALUE, Integer.MAX_VALUE).intValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(int.class, (c) -> {
@@ -75,7 +76,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, Integer.MIN_VALUE, Integer.MAX_VALUE).intValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(Long.class, (c) -> {
@@ -83,7 +84,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, Long.MIN_VALUE, Long.MAX_VALUE).longValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(long.class, (c) -> {
@@ -91,7 +92,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, Long.MIN_VALUE, Long.MAX_VALUE).longValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(Float.class, (c) -> {
@@ -99,7 +100,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, -Float.MAX_VALUE, Float.MAX_VALUE).floatValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(float.class, (c) -> {
@@ -107,7 +108,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, -Float.MAX_VALUE, Float.MAX_VALUE).floatValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(Double.class, (c) -> {
@@ -115,7 +116,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, -Double.MAX_VALUE, Double.MAX_VALUE).doubleValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(double.class, (c) -> {
@@ -123,7 +124,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, -Double.MAX_VALUE, Double.MAX_VALUE).doubleValue();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(Number.class, (c) -> {
@@ -131,7 +132,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             try {
                 return parseAndValidateNumber(number, c, -Double.MAX_VALUE, Double.MAX_VALUE);
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", number));
             }
         });
         registerContext(BigDecimal.class, (c) -> {
@@ -141,7 +142,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
                 validateMinMax(c, number);
                 return number;
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", numberStr);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", numberStr));
             }
         });
         registerContext(BigInteger.class, (c) -> {
@@ -151,7 +152,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
                 validateMinMax(c, number);
                 return number.toBigIntegerExact();
             } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", numberStr);
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", numberStr));
             }
         });
         registerContext(Boolean.class, (c) -> ACFUtil.isTruthy(c.popFirstArg()));
@@ -159,7 +160,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
         registerContext(char.class, c -> {
             String s = c.popFirstArg();
             if (s.length() > 1) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_MAX_LENGTH, "{max}", String.valueOf(1));
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LENGTH_TOO_LARGE.replace("<max>", String.valueOf(1)));
             }
             return s.charAt(0);
         });
@@ -177,12 +178,12 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             Integer maxLen = c.getFlagValue("maxlen", (Integer) null);
             if (minLen != null) {
                 if (ret.length() < minLen) {
-                    throw new InvalidCommandArgument(MessageKeys.MUST_BE_MIN_LENGTH, "{min}", String.valueOf(minLen));
+                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LENGTH_TOO_SMALL.replace("<min>", String.valueOf(minLen)));
                 }
             }
             if (maxLen != null) {
                 if (ret.length() > maxLen) {
-                    throw new InvalidCommandArgument(MessageKeys.MUST_BE_MAX_LENGTH, "{max}", String.valueOf(maxLen));
+                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LENGTH_TOO_LARGE.replace("<max>", String.valueOf(maxLen)));
                 }
             }
 
@@ -218,7 +219,8 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             Enum<?> match = ACFUtil.simpleMatch(enumCls, first);
             if (match == null) {
                 List<String> names = ACFUtil.enumNames(enumCls);
-                throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_ONE_OF, "{valid}", ACFUtil.join(names, ", "));
+                String msg = MessageConfig.IMP.ERROR.PLEASE_SPECIFY_ONE_OF.replace("<valid>", ACFUtil.join(names, ", "));
+                throw new InvalidCommandArgument(msg);
             }
             return match;
         });
@@ -231,7 +233,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
                 c.popLastArg();
                 page = ACFUtil.parseInt(last);
                 if (page == null) {
-                    throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", last);
+                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", last));
                 }
                 if (!c.getArgs().isEmpty()) {
                     search = c.getArgs();
@@ -240,7 +242,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
                 c.popFirstArg();
                 page = ACFUtil.parseInt(first);
                 if (page == null) {
-                    throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", first);
+                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_BE_A_NUMBER.replace("<num>", first));
                 }
                 if (!c.getArgs().isEmpty()) {
                     search = c.getArgs();
@@ -283,10 +285,10 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
         minValue = c.getFlagValue("min", minValue);
         maxValue = c.getFlagValue("max", maxValue);
         if (maxValue != null && val.doubleValue() > maxValue.doubleValue()) {
-            throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_AT_MOST, "{max}", String.valueOf(maxValue));
+            throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLEASE_SPECIFY_AT_MOST.replace("<max>", String.valueOf(maxValue)));
         }
         if (minValue != null && val.doubleValue() < minValue.doubleValue()) {
-            throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_AT_LEAST, "{min}", String.valueOf(minValue));
+            throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLEASE_SPECIFY_AT_MOST.replace("<min>", String.valueOf(minValue)));
         }
     }
 

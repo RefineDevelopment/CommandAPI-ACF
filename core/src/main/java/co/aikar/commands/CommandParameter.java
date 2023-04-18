@@ -37,7 +37,6 @@ import co.aikar.commands.contexts.ContextResolver;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import co.aikar.commands.contexts.IssuerOnlyContextResolver;
 import co.aikar.commands.contexts.OptionalContextResolver;
-import co.aikar.locales.MessageKey;
 
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -171,8 +170,7 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
     }
 
     public String getDisplayName(CommandIssuer issuer) {
-        String translated = manager.getLocales().getOptionalMessage(issuer, MessageKey.of("acf-core.parameter." + name.toLowerCase()));
-        return translated != null ? translated : name;
+        return name;
     }
 
     public CommandManager getManager() {

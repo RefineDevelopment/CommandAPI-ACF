@@ -24,13 +24,12 @@
 package co.aikar.commands;
 
 import co.aikar.commands.apachecommonslang.ApacheCommonsExceptionUtil;
+import co.aikar.commands.config.impl.MessageConfig;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,27 +41,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class VelocityCommandManager extends
-        CommandManager<CommandSource, VelocityCommandIssuer, NamedTextColor, VelocityMessageFormatter, VelocityCommandExecutionContext, VelocityConditionContext> {
+public class VelocityCommandManager extends CommandManager<CommandSource, VelocityCommandIssuer, VelocityCommandExecutionContext, VelocityConditionContext> {
 
     protected final ProxyServer proxy;
     protected final PluginContainer plugin;
     protected Map<String, VelocityRootCommand> registeredCommands = new HashMap<>();
     protected VelocityCommandContexts contexts;
     protected VelocityCommandCompletions completions;
-    protected VelocityLocales locales;
 
     public VelocityCommandManager(ProxyServer proxy, Object plugin) {
         this.proxy = proxy;
         this.plugin = proxy.getPluginManager().getPlugin(plugin.getClass().getAnnotation(Plugin.class).id()).get();
-        this.formatters.put(MessageType.ERROR, defaultFormatter = new VelocityMessageFormatter(NamedTextColor.RED, NamedTextColor.YELLOW, NamedTextColor.RED));
-        this.formatters.put(MessageType.SYNTAX, new VelocityMessageFormatter(NamedTextColor.YELLOW, NamedTextColor.GREEN, NamedTextColor.WHITE));
-        this.formatters.put(MessageType.INFO, new VelocityMessageFormatter(NamedTextColor.BLUE, NamedTextColor.DARK_GREEN, NamedTextColor.GREEN));
-        this.formatters.put(MessageType.HELP, new VelocityMessageFormatter(NamedTextColor.AQUA, NamedTextColor.GREEN, NamedTextColor.YELLOW));
 
-        getLocales();
-
-        proxy.getEventManager().register(plugin, new ACFVelocityListener(this, this.plugin, proxy));
+        new MessageConfig().createConfig(this.plugin.getDescription().getName().get());
 
         registerDependency(plugin.getClass(), plugin);
         registerDependency(Plugin.class, plugin);
@@ -91,27 +82,6 @@ public class VelocityCommandManager extends
             this.completions = new VelocityCommandCompletions(proxy, this);
         }
         return completions;
-    }
-
-    @Override
-    public VelocityLocales getLocales() {
-        if (this.locales == null) {
-            this.locales = new VelocityLocales(this);
-            this.locales.loadLanguages();
-        }
-        return locales;
-    }
-
-    public void readLocale(Player player) {
-        if (!player.isActive()) {
-            return;
-        }
-
-        //This can be null if we didn't receive a settings packet
-        Locale locale = player.getPlayerSettings().getLocale();
-        if (locale != null) {
-            setIssuerLocale(player, player.getPlayerSettings().getLocale());
-        }
     }
 
     @Override
