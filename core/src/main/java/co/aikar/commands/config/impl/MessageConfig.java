@@ -98,10 +98,10 @@ public class MessageConfig extends ConfigUtil {
         public String NO_COMMANDS_MATCHED_SEARCH = "&cNo command matched &f<search>&c.";
         public String NO_RESULTS = "&cNo more results.";
 
-        public String HEADER = "&c=== &fShowing help for &c<commandPrefix><command>&f. &c===";
-        public String SEARCH_HEADER = "&c=== &fSearch results for &c<commandPrefix><command> &f<search> &c===";
-        public String FORMAT = "&f<command> &c<parameters>";
-        public String FORMAT_WITH_DESCRIPTION = "&f<command> &c<parameters> &7&o(<description>)";
-        public String FOOTER = "&fShowing page &f<page> &fof &f<totalPages> &7(<results> results).";
+        public String HEADER = "&7&m---&f Showing help for &c<commandPrefix><command>&f. &7&m---";
+        public String SEARCH_HEADER = "&7&m---&f Search results for &c<commandPrefix><command> &f<search>. &7&m---";
+        public String FORMAT = "&7■ &c<commandPrefix><command> &f<parameters>";
+        public String FORMAT_WITH_DESCRIPTION = "&7■ &c<commandPrefix><command> &f<parameters> &7(<description>)";
+        public String FOOTER = "&7&m---&f Showing page &c<page> &fof &c<totalPages> &7(<results> results)&f. &7&m---";
     }
 }
