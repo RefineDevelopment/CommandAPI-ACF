@@ -80,7 +80,7 @@ public class BukkitCommandIssuer implements CommandIssuer {
         Clickable clickable = new Clickable();
 
         for (ClickablePart clickablePart : clickableParts) {
-            clickable.add(clickablePart.getMessage(), clickablePart.getHover(), clickablePart.getCommand(), clickablePart.getSuggest());
+            clickable.add(ACFBukkitUtil.color(clickablePart.getMessage()), ACFBukkitUtil.color(clickablePart.getHover()), clickablePart.getCommand(), clickablePart.getSuggest());
         }
 
         clickable.sendToPlayer(sender);
