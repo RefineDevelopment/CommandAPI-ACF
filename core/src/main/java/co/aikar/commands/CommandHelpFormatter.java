@@ -83,7 +83,7 @@ public class CommandHelpFormatter {
                         clickableParts.add(new ClickablePart(
                                 MessageConfig.IMP.HELP.PREVIOUS_PAGE,
                                 MessageConfig.IMP.HELP.PREVIOUS_PAGE_HOVER,
-                                help.getCommandPrefix() + help.getCommandName() + (help.getPage() - 1),
+                                help.getCommandPrefix() + help.getCommandName() + " " + (help.getPage() - 1),
                                 "")
                         );
                     }
@@ -94,7 +94,7 @@ public class CommandHelpFormatter {
                         clickableParts.add(new ClickablePart(
                                 MessageConfig.IMP.HELP.NEXT_PAGE,
                                 MessageConfig.IMP.HELP.NEXT_PAGE_HOVER,
-                                help.getCommandPrefix() + help.getCommandName() + (help.getPage() + 1),
+                                help.getCommandPrefix() + help.getCommandName() + " " + (help.getPage() + 1),
                                 "")
                         );
                     }

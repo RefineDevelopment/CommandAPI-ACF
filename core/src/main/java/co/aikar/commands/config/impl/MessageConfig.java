@@ -102,8 +102,8 @@ public class MessageConfig extends ConfigUtil {
         public String SEARCH_HEADER = "&7&m---&f Search results for &c<commandPrefix><command> &f<search>. &7&m---";
         public String FORMAT = "&7■ &c<commandPrefix><command> &f<parameters>";
         public String FORMAT_WITH_DESCRIPTION = "&7■ &c<commandPrefix><command> &f<parameters> &7(<description>)";
-        public String FOOTER = "<previousPage>&fShowing page &c<page> &fof &c<totalPages> &7(<results> results)&f.<nextPage>";
-        public String NEXT_PAGE = " &a»";
+        public String FOOTER = "<previousPage> &fShowing page &c<page> &fof &c<totalPages> &7(<results> results)&f. <nextPage>";
+        public String NEXT_PAGE = "&a»";
         public String NEXT_PAGE_HOVER = "&7Click to go to the next page.";
         public String PREVIOUS_PAGE = "&c« ";
         public String PREVIOUS_PAGE_HOVER = "&7Click to go to the previous page.";
