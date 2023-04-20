@@ -60,50 +60,18 @@ public class CommandHelpFormatter {
     // ########
 
     public void printHelpHeader(CommandHelp help, CommandIssuer issuer) {
-        List<ClickablePart> clickableParts = new ArrayList<>();
-
-        String msg = MessageConfig.IMP.HELP.HEADER;
-
-        for (String word : msg.split(" ")) {
-            switch (word) {
-                case "<previousPage>": {
-                    if (help.getPage() > 1) {
-                        clickableParts.add(new ClickablePart(
-                                MessageConfig.IMP.HELP.PREVIOUS_PAGE,
-                                MessageConfig.IMP.HELP.PREVIOUS_PAGE_HOVER,
-                                help.getCommandPrefix() + help.getCommandName() + (help.getPage() - 1),
-                                "")
-                        );
-                    }
-                    break;
-                }
-                case "<nextPage>": {
-                    if (help.getPage() < help.getTotalPages()) {
-                        clickableParts.add(new ClickablePart(
-                                MessageConfig.IMP.HELP.NEXT_PAGE,
-                                MessageConfig.IMP.HELP.NEXT_PAGE_HOVER,
-                                help.getCommandPrefix() + help.getCommandName() + (help.getPage() + 1),
-                                "")
-                        );
-                    }
-                    break;
-                }
-                default: {
-                    clickableParts.add(new ClickablePart(getReplacedHeaderFooter(word + " ", help), "", "", ""));
-                    break;
-                }
-            }
-        }
-
-        issuer.sendClickablesSameLine(clickableParts);
+        issuer.sendMessage(getReplacedHeaderFooter(MessageConfig.IMP.HELP.HEADER, help));
     }
 
     public void printSearchHeader(CommandHelp help, CommandIssuer issuer) {
         issuer.sendMessage(getReplacedHeaderFooter(MessageConfig.IMP.HELP.SEARCH_HEADER, help));
     }
 
-
     public void printHelpFooter(CommandHelp help, CommandIssuer issuer) {
+        if (help.isOnlyPage()) {
+            return;
+        }
+
         List<ClickablePart> clickableParts = new ArrayList<>();
 
         String msg = MessageConfig.IMP.HELP.FOOTER;
@@ -143,6 +111,7 @@ public class CommandHelpFormatter {
     }
 
 
+        for (String word : msg.split(" ")) {
     public void printHelpCommand(CommandHelp help, CommandIssuer issuer, HelpEntry entry) {
         String formatted = getReplacedFormat(help, entry);
         for (String msg : ACFPatterns.NEWLINE.split(formatted)) {
