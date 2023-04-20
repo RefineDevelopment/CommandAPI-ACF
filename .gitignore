@@ -33,3 +33,7 @@ hs_err_pid*
 .classpath
 .project
 
+
+.idea/discord.xml
+
+.idea/jpa-buddy.xml
