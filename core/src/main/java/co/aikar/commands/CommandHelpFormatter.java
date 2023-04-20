@@ -79,7 +79,7 @@ public class CommandHelpFormatter {
         if (msg.contains("<previousPage>")) {
             msg = msg.replace("<previousPage>", "");
             if (help.getPage() > 1) {
-                String previousPageCommand = help.getCommandPrefix() + help.getCommandName() + (help.getPage() - 1);
+                String previousPageCommand = help.getCommandPrefix() + help.getCommandName() + " " + (help.getPage() - 1);
                 clickableParts.add(new ClickablePart(MessageConfig.IMP.HELP.PREVIOUS_PAGE, MessageConfig.IMP.HELP.PREVIOUS_PAGE_HOVER, previousPageCommand, ""));
             }
         }
@@ -88,7 +88,7 @@ public class CommandHelpFormatter {
 
         if (msg.contains("<nextPage>")) {
             if (help.getPage() < help.getTotalPages()) {
-                String nextPageCommand = help.getCommandPrefix() + help.getCommandName() + (help.getPage() + 1);
+                String nextPageCommand = help.getCommandPrefix() + help.getCommandName() + " " + (help.getPage() + 1);
                 clickableParts.add(new ClickablePart(MessageConfig.IMP.HELP.NEXT_PAGE, MessageConfig.IMP.HELP.NEXT_PAGE_HOVER, nextPageCommand, ""));
             }
         }
