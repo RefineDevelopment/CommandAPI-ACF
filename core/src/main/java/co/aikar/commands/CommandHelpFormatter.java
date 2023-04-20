@@ -110,8 +110,6 @@ public class CommandHelpFormatter {
         issuer.sendClickablesSameLine(clickableParts);
     }
 
-
-
     public void printHelpCommand(CommandHelp help, CommandIssuer issuer, HelpEntry entry) {
         String formatted = getReplacedFormat(help, entry);
         for (String msg : ACFPatterns.NEWLINE.split(formatted)) {
