@@ -60,9 +60,21 @@ public class CommandHelpFormatter {
     // ########
 
     public void printHelpHeader(CommandHelp help, CommandIssuer issuer) {
+        issuer.sendMessage(getReplacedHeaderFooter(MessageConfig.IMP.HELP.HEADER, help));
+    }
+
+    public void printSearchHeader(CommandHelp help, CommandIssuer issuer) {
+        issuer.sendMessage(getReplacedHeaderFooter(MessageConfig.IMP.HELP.SEARCH_HEADER, help));
+    }
+
+    public void printHelpFooter(CommandHelp help, CommandIssuer issuer) {
+        if (help.isOnlyPage()) {
+            return;
+        }
+
         List<ClickablePart> clickableParts = new ArrayList<>();
 
-        String msg = MessageConfig.IMP.HELP.HEADER;
+        String msg = MessageConfig.IMP.HELP.FOOTER;
 
         if (msg.contains("<previousPage>")) {
             msg = msg.replace("<previousPage>", "");
@@ -72,7 +84,7 @@ public class CommandHelpFormatter {
             }
         }
 
-        clickableParts.add(new ClickablePart(getReplacedHeaderFooter(msg.replace("<nextPage>", ""), help), null, null, null));
+        clickableParts.add(new ClickablePart(getReplacedHeaderFooter(msg.replace("<nextPage>", ""), help), "", "", ""));
 
         if (msg.contains("<nextPage>")) {
             if (help.getPage() < help.getTotalPages()) {
@@ -82,19 +94,6 @@ public class CommandHelpFormatter {
         }
 
         issuer.sendClickablesSameLine(clickableParts);
-    }
-
-    public void printSearchHeader(CommandHelp help, CommandIssuer issuer) {
-        issuer.sendMessage(getReplacedHeaderFooter(MessageConfig.IMP.HELP.SEARCH_HEADER, help));
-    }
-
-
-    public void printHelpFooter(CommandHelp help, CommandIssuer issuer) {
-        if (help.isOnlyPage()) {
-            return;
-        }
-
-        issuer.sendMessage(getReplacedHeaderFooter(MessageConfig.IMP.HELP.FOOTER, help));
     }
 
 
