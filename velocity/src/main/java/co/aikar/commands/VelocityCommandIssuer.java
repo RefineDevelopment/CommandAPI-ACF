@@ -27,6 +27,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -81,8 +82,19 @@ public class VelocityCommandIssuer implements CommandIssuer {
     }
 
     @Override
-    public void sendClickableInternal(String message, String hover, String command, String suggest) {
+    public void sendClickable(String message, String hover, String command, String suggest) {
         new Clickable(message, hover, command, suggest).sendToPlayer(source);
+    }
+
+    @Override
+    public void sendClickablesSameLine(List<ClickablePart> clickableParts) {
+        Clickable clickable = new Clickable();
+
+        for (ClickablePart clickablePart : clickableParts) {
+            clickable.add(clickablePart.getMessage(), clickablePart.getHover(), clickablePart.getCommand(), clickablePart.getSuggest());
+        }
+
+        clickable.sendToPlayer(source);
     }
 
     @Override

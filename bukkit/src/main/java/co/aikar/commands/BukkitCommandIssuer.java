@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -70,8 +71,19 @@ public class BukkitCommandIssuer implements CommandIssuer {
     }
 
     @Override
-    public void sendClickableInternal(String message, String hover, String command, String suggest) {
+    public void sendClickable(String message, String hover, String command, String suggest) {
         new Clickable(ACFBukkitUtil.color(message), ACFBukkitUtil.color(hover), command, suggest).sendToPlayer(sender);
+    }
+
+    @Override
+    public void sendClickablesSameLine(List<ClickablePart> clickableParts) {
+        Clickable clickable = new Clickable();
+
+        for (ClickablePart clickablePart : clickableParts) {
+            clickable.add(clickablePart.getMessage(), clickablePart.getHover(), clickablePart.getCommand(), clickablePart.getSuggest());
+        }
+
+        clickable.sendToPlayer(sender);
     }
 
     @Override

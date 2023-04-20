@@ -52,7 +52,7 @@ public class JDACommandEvent implements CommandIssuer {
     }
 
     @Override
-    public void sendClickableInternal(String message, String hover, String command, String suggest) {
+    public void sendClickable(String message, String hover, String command, String suggest) {
         this.event.getChannel().sendMessage(message).queue();
     }
 

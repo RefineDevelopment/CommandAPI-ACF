@@ -28,6 +28,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -71,8 +72,19 @@ public class BungeeCommandIssuer implements CommandIssuer {
     }
 
     @Override
-    public void sendClickableInternal(String message, String hover, String command, String suggest) {
-        new Clickable(ACFBungeeUtil.color(message), ACFBungeeUtil.color(hover), command, suggest).sendToPlayer(sender);
+    public void sendClickable(String message, String hover, String command, String suggest) {
+        new Clickable(message, hover, command, suggest).sendToPlayer(sender);
+    }
+
+    @Override
+    public void sendClickablesSameLine(List<ClickablePart> clickableParts) {
+        Clickable clickable = new Clickable();
+
+        for (ClickablePart clickablePart : clickableParts) {
+            clickable.add(clickablePart.getMessage(), clickablePart.getHover(), clickablePart.getCommand(), clickablePart.getSuggest());
+        }
+
+        clickable.sendToPlayer(sender);
     }
 
     @Override

@@ -42,7 +42,7 @@ public class ACFBukkitHelpTopic extends GenericCommandHelpTopic {
             }
 
             @Override
-            public void sendClickableInternal(String message, String hover, String command, String suggest) {
+            public void sendClickable(String message, String hover, String command, String suggest) {
                 messages.add(message);
             }
         };

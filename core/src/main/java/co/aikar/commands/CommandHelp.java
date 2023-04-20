@@ -155,7 +155,7 @@ public class CommandHelp {
         int i = 0;
 
         if (min >= totalResults) {
-            issuer.sendMessage(MessageType.HELP, MessageConfig.IMP.HELP.NO_RESULTS);
+            issuer.sendMessage(MessageConfig.IMP.HELP.NO_RESULTS);
             return;
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 Daniel Ennis (Aikar) - MIT License
+ * Copyright (c) 2016-2023 Daniel Ennis (Aikar) - MIT License
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -23,25 +23,21 @@
 
 package co.aikar.commands;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@SuppressWarnings("WeakerAccess")
-public class MessageType {
-    private static final AtomicInteger counter = new AtomicInteger(1);
+/**
+ * @author Creaxx
+ * Created At: 4/20/2023
+ */
 
-    public static final MessageType INFO = new MessageType();
-    public static final MessageType SYNTAX = new MessageType();
-    public static final MessageType ERROR = new MessageType();
-    public static final MessageType HELP = new MessageType();
+@Getter
+@AllArgsConstructor
+public class ClickablePart {
 
-    private final int id = counter.getAndIncrement();
+    private String message;
+    private String hover;
+    private String command;
+    private String suggest;
 
-    public int hashCode() {
-        return id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return (this == o);
-    }
 }

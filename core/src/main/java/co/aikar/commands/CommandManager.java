@@ -324,19 +324,19 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
         return result;
     }
 
-    public void sendMessage(IT issuerArg, MessageType type, String s) {
-        sendMessage(getCommandIssuer(issuerArg), type, s);
+    public void sendMessage(IT issuerArg, String s) {
+        sendMessage(getCommandIssuer(issuerArg), s);
     }
 
-    public void sendMessage(CommandIssuer issuer, MessageType type, String s) {
-        String message = formatMessage(issuer, type, s);
+    public void sendMessage(CommandIssuer issuer, String s) {
+        String message = formatMessage(issuer, s);
 
         for (String msg : ACFPatterns.NEWLINE.split(message)) {
             issuer.sendMessageInternal(ACFUtil.rtrim(msg));
         }
     }
 
-    public String formatMessage(CommandIssuer issuer, MessageType type, String message) {
+    public String formatMessage(CommandIssuer issuer, String message) {
         message = getCommandReplacements().replace(message);
         return message;
     }

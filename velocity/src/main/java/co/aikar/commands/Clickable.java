@@ -8,8 +8,10 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class Clickable {
-
     private TextComponent component = null;
+
+    public Clickable() {
+    }
 
     public Clickable(String msg, String hoverMsg, String clickString, String suggestString) {
         TextComponent message = LegacyComponentSerializer.legacySection().deserialize(msg);
@@ -27,6 +29,30 @@ public class Clickable {
         }
 
         component = message;
+    }
+
+    public TextComponent add(String msg, String hoverMsg, String clickString, String suggestString) {
+        TextComponent message = LegacyComponentSerializer.legacySection().deserialize(msg);
+
+        if (hoverMsg != null && !hoverMsg.equalsIgnoreCase("")) {
+            message.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, LegacyComponentSerializer.legacySection().deserialize(hoverMsg)));
+        }
+
+        if (clickString != null && !clickString.equalsIgnoreCase("")) {
+            message.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, clickString));
+        }
+
+        if (suggestString != null && !suggestString.equalsIgnoreCase("")) {
+            message.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND, suggestString));
+        }
+
+        if (component == null) {
+            component = message;
+        } else {
+            component = component.append(message);
+        }
+
+        return component;
     }
 
     public void sendToPlayer(CommandSource player) {

@@ -26,6 +26,7 @@ package co.aikar.commands;
 import co.aikar.commands.config.impl.MessageConfig;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface CommandIssuer {
@@ -49,7 +50,7 @@ public interface CommandIssuer {
      * @param message
      */
     default void sendMessage(String message) {
-        getManager().sendMessage(this, MessageType.HELP, MessageConfig.IMP.FORMATS.INFO_MESSAGE.replace("<message>", message));
+        getManager().sendMessage(this, MessageConfig.IMP.FORMATS.INFO_MESSAGE.replace("<message>", message));
     }
 
     /**
@@ -64,26 +65,16 @@ public interface CommandIssuer {
      */
     boolean hasPermission(String permission);
 
-
-    default void sendSyntax(String message) {
-        sendMessage(MessageType.SYNTAX, message);
-    }
     default void sendInfo(String message) {
-        sendMessage(MessageType.INFO, MessageConfig.IMP.FORMATS.INFO_MESSAGE.replace("<message>", message));
+        sendMessage(MessageConfig.IMP.FORMATS.INFO_MESSAGE.replace("<message>", message));
     }
     default void sendError(String message) {
-        sendMessage(MessageType.ERROR, MessageConfig.IMP.FORMATS.ERROR_MESSAGE.replace("<message>", message));
-    }
-    default void sendMessage(MessageType type, String message) {
-        getManager().sendMessage(this, type, message);
+        sendMessage(MessageConfig.IMP.FORMATS.ERROR_MESSAGE.replace("<message>", message));
     }
 
-    /**
-     * @deprecated Do not call this, for internal use. Not considered part of the API and may break.
-     * @param message
-     */
-    @Deprecated
-    void sendClickableInternal(String message, String hover, String command, String suggest);
+    void sendClickable(String message, String hover, String command, String suggest);
+
+    void sendClickablesSameLine(List<ClickablePart> clickableParts);
 
     /**
      * @deprecated Do not call this, for internal use. Not considered part of the API and may break.
