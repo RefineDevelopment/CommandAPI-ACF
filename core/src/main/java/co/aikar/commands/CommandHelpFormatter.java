@@ -64,20 +64,34 @@ public class CommandHelpFormatter {
 
         String msg = MessageConfig.IMP.HELP.HEADER;
 
-        if (msg.contains("<previousPage>")) {
-            msg = msg.replace("<previousPage>", "");
-            if (help.getPage() > 1) {
-                String previousPageCommand = help.getCommandPrefix() + help.getCommandName() + (help.getPage() - 1);
-                clickableParts.add(new ClickablePart(MessageConfig.IMP.HELP.PREVIOUS_PAGE, MessageConfig.IMP.HELP.PREVIOUS_PAGE_HOVER, previousPageCommand, ""));
-            }
-        }
-
-        clickableParts.add(new ClickablePart(getReplacedHeaderFooter(msg.replace("<nextPage>", ""), help), null, null, null));
-
-        if (msg.contains("<nextPage>")) {
-            if (help.getPage() < help.getTotalPages()) {
-                String nextPageCommand = help.getCommandPrefix() + help.getCommandName() + (help.getPage() + 1);
-                clickableParts.add(new ClickablePart(MessageConfig.IMP.HELP.NEXT_PAGE, MessageConfig.IMP.HELP.NEXT_PAGE_HOVER, nextPageCommand, ""));
+        for (String word : msg.split(" ")) {
+            switch (word) {
+                case "<previousPage>": {
+                    if (help.getPage() > 1) {
+                        clickableParts.add(new ClickablePart(
+                                MessageConfig.IMP.HELP.PREVIOUS_PAGE,
+                                MessageConfig.IMP.HELP.PREVIOUS_PAGE_HOVER,
+                                help.getCommandPrefix() + help.getCommandName() + (help.getPage() - 1),
+                                "")
+                        );
+                    }
+                    break;
+                }
+                case "<nextPage>": {
+                    if (help.getPage() < help.getTotalPages()) {
+                        clickableParts.add(new ClickablePart(
+                                MessageConfig.IMP.HELP.NEXT_PAGE,
+                                MessageConfig.IMP.HELP.NEXT_PAGE_HOVER,
+                                help.getCommandPrefix() + help.getCommandName() + (help.getPage() + 1),
+                                "")
+                        );
+                    }
+                    break;
+                }
+                default: {
+                    clickableParts.add(new ClickablePart(getReplacedHeaderFooter(word + " ", help), "", "", ""));
+                    break;
+                }
             }
         }
 
@@ -90,11 +104,42 @@ public class CommandHelpFormatter {
 
 
     public void printHelpFooter(CommandHelp help, CommandIssuer issuer) {
-        if (help.isOnlyPage()) {
-            return;
+        List<ClickablePart> clickableParts = new ArrayList<>();
+
+        String msg = MessageConfig.IMP.HELP.FOOTER;
+
+        for (String word : msg.split(" ")) {
+            switch (word) {
+                case "<previousPage>": {
+                    if (help.getPage() > 1) {
+                        clickableParts.add(new ClickablePart(
+                                MessageConfig.IMP.HELP.PREVIOUS_PAGE,
+                                MessageConfig.IMP.HELP.PREVIOUS_PAGE_HOVER,
+                                help.getCommandPrefix() + help.getCommandName() + (help.getPage() - 1),
+                                "")
+                        );
+                    }
+                    break;
+                }
+                case "<nextPage>": {
+                    if (help.getPage() < help.getTotalPages()) {
+                        clickableParts.add(new ClickablePart(
+                                MessageConfig.IMP.HELP.NEXT_PAGE,
+                                MessageConfig.IMP.HELP.NEXT_PAGE_HOVER,
+                                help.getCommandPrefix() + help.getCommandName() + (help.getPage() + 1),
+                                "")
+                        );
+                    }
+                    break;
+                }
+                default: {
+                    clickableParts.add(new ClickablePart(getReplacedHeaderFooter(word + " ", help), "", "", ""));
+                    break;
+                }
+            }
         }
 
-        issuer.sendMessage(getReplacedHeaderFooter(MessageConfig.IMP.HELP.FOOTER, help));
+        issuer.sendClickablesSameLine(clickableParts);
     }
 
 
