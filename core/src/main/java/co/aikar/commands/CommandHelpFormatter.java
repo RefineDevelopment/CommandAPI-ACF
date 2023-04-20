@@ -76,26 +76,39 @@ public class CommandHelpFormatter {
 
         String msg = MessageConfig.IMP.HELP.FOOTER;
 
-        if (msg.contains("<previousPage>")) {
-            msg = msg.replace("<previousPage>", "");
-            if (help.getPage() > 1) {
-                String previousPageCommand = help.getCommandPrefix() + help.getCommandName() + " " + (help.getPage() - 1);
-                clickableParts.add(new ClickablePart(MessageConfig.IMP.HELP.PREVIOUS_PAGE, MessageConfig.IMP.HELP.PREVIOUS_PAGE_HOVER, previousPageCommand, ""));
-            }
-        }
-
-        clickableParts.add(new ClickablePart(getReplacedHeaderFooter(msg.replace("<nextPage>", ""), help), "", "", ""));
-
-        if (msg.contains("<nextPage>")) {
-            if (help.getPage() < help.getTotalPages()) {
-                String nextPageCommand = help.getCommandPrefix() + help.getCommandName() + " " + (help.getPage() + 1);
-                clickableParts.add(new ClickablePart(MessageConfig.IMP.HELP.NEXT_PAGE, MessageConfig.IMP.HELP.NEXT_PAGE_HOVER, nextPageCommand, ""));
+        for (String word : msg.split(" ")) {
+            switch (word) {
+                case "<previousPage>": {
+                    if (help.getPage() > 1) {
+                        clickableParts.add(new ClickablePart(
+                                MessageConfig.IMP.HELP.PREVIOUS_PAGE,
+                                MessageConfig.IMP.HELP.PREVIOUS_PAGE_HOVER,
+                                help.getCommandPrefix() + help.getCommandName() + " " + (help.getPage() - 1),
+                                "")
+                        );
+                    }
+                    break;
+                }
+                case "<nextPage>": {
+                    if (help.getPage() < help.getTotalPages()) {
+                        clickableParts.add(new ClickablePart(
+                                MessageConfig.IMP.HELP.NEXT_PAGE,
+                                MessageConfig.IMP.HELP.NEXT_PAGE_HOVER,
+                                help.getCommandPrefix() + help.getCommandName() + " " + (help.getPage() + 1),
+                                "")
+                        );
+                    }
+                    break;
+                }
+                default: {
+                    clickableParts.add(new ClickablePart(getReplacedHeaderFooter(word + " ", help), "", "", ""));
+                    break;
+                }
             }
         }
 
         issuer.sendClickablesSameLine(clickableParts);
     }
-
 
     public void printHelpCommand(CommandHelp help, CommandIssuer issuer, HelpEntry entry) {
         String formatted = getReplacedFormat(help, entry);
