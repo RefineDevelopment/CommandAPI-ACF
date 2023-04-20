@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 
 public class JDACommandEvent implements CommandIssuer {
@@ -54,6 +55,10 @@ public class JDACommandEvent implements CommandIssuer {
     @Override
     public void sendClickable(String message, String hover, String command, String suggest) {
         this.event.getChannel().sendMessage(message).queue();
+    }
+
+    @Override
+    public void sendClickablesSameLine(List<ClickablePart> clickableParts) {
     }
 
     @Override
