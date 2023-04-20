@@ -59,6 +59,9 @@ public class JDACommandEvent implements CommandIssuer {
 
     @Override
     public void sendClickablesSameLine(List<ClickablePart> clickableParts) {
+        for (ClickablePart clickablePart : clickableParts) {
+            this.event.getChannel().sendMessage(clickablePart.getMessage()).queue();
+        }
     }
 
     @Override
