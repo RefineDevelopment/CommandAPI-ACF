@@ -14,10 +14,10 @@ public class Clickable {
     }
 
     public Clickable(String msg, String hoverMsg, String clickString, String suggestString) {
-        TextComponent message = LegacyComponentSerializer.legacySection().deserialize(msg);
+        TextComponent message = ACFVelocityUtil.color(msg);
 
         if (hoverMsg != null && !hoverMsg.equalsIgnoreCase("")) {
-            message.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, LegacyComponentSerializer.legacySection().deserialize(hoverMsg)));
+            message.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, ACFVelocityUtil.color(hoverMsg)));
         }
 
         if (clickString != null && !clickString.equalsIgnoreCase("")) {
@@ -32,10 +32,10 @@ public class Clickable {
     }
 
     public TextComponent add(String msg, String hoverMsg, String clickString, String suggestString) {
-        TextComponent message = LegacyComponentSerializer.legacySection().deserialize(msg);
+        TextComponent message = ACFVelocityUtil.color(msg);
 
         if (hoverMsg != null && !hoverMsg.equalsIgnoreCase("")) {
-            message.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, LegacyComponentSerializer.legacySection().deserialize(hoverMsg)));
+            message.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, ACFVelocityUtil.color(hoverMsg)));
         }
 
         if (clickString != null && !clickString.equalsIgnoreCase("")) {
