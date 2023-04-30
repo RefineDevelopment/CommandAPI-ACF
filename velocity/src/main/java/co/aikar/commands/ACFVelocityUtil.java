@@ -15,9 +15,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ACFVelocityUtil {
+    public static LegacyComponentSerializer serializer = LegacyComponentSerializer.builder().character('&').hexColors().build();
 
     public static TextComponent color(String message) {
-        return LegacyComponentSerializer.legacySection().deserialize(message);
+        return serializer.deserialize(message);
     }
 
     public static Player findPlayerSmart(ProxyServer server, CommandIssuer issuer, String search) {
