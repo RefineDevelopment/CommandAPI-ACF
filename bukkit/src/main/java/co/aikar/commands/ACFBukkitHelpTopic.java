@@ -42,6 +42,13 @@ public class ACFBukkitHelpTopic extends GenericCommandHelpTopic {
             }
 
             @Override
+            public void sendClickablesSameLine(List<ClickablePart> clickableParts) {
+                for (ClickablePart clickablePart : clickableParts) {
+                    messages.add(clickablePart.getMessage());
+                }
+            }
+
+            @Override
             public void sendClickable(String message, String hover, String command, String suggest) {
                 messages.add(message);
             }
