@@ -115,8 +115,8 @@
                             <shadedPattern>co.aikar.commands.lib.util</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>co.aikar.timings.lib</pattern>
-                            <shadedPattern>co.aikar.commands.lib.timings</shadedPattern>
+                            <pattern>org.yaml.snakeyaml</pattern>
+                            <shadedPattern>co.aikar.commands.lib.snakeyml</shadedPattern>
                         </relocation>
                     </relocations>
                     <dependencyReducedPomLocation>
