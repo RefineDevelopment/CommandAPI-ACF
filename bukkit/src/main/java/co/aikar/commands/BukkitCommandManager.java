@@ -25,10 +25,7 @@ package co.aikar.commands;
 
 import co.aikar.commands.apachecommonslang.ApacheCommonsExceptionUtil;
 import co.aikar.commands.config.impl.MessageConfig;
-import co.aikar.timings.lib.MCTiming;
-import co.aikar.timings.lib.TimingManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
@@ -77,7 +74,6 @@ public class BukkitCommandManager extends CommandManager<
     @SuppressWarnings("WeakerAccess")
     protected final Plugin plugin;
     private final CommandMap commandMap;
-    private final TimingManager timingManager;
     private final Logger logger;
     public final Integer mcMinorVersion;
     public final Integer mcPatchVersion;
@@ -85,7 +81,6 @@ public class BukkitCommandManager extends CommandManager<
     protected Map<String, BukkitRootCommand> registeredCommands = new HashMap<>();
     protected BukkitCommandContexts contexts;
     protected BukkitCommandCompletions completions;
-    MCTiming commandTiming;
     protected boolean autoDetectFromClient = true;
 
     public BukkitCommandManager(Plugin plugin) {
@@ -95,8 +90,6 @@ public class BukkitCommandManager extends CommandManager<
 
         String prefix = this.plugin.getDescription().getPrefix();
         this.logger = Logger.getLogger(prefix != null ? prefix : this.plugin.getName());
-        this.timingManager = TimingManager.of(plugin);
-        this.commandTiming = this.timingManager.of("Commands");
         this.commandMap = hookCommandMap();
         Pattern versionPattern = Pattern.compile("\\(MC: (\\d)\\.(\\d+)\\.?(\\d+?)?\\)");
         Matcher matcher = versionPattern.matcher(Bukkit.getVersion());
@@ -274,10 +267,6 @@ public class BukkitCommandManager extends CommandManager<
             cls = cls.getSuperclass();
         }
         return null;
-    }
-
-    public TimingManager getTimings() {
-        return timingManager;
     }
 
     @Override
