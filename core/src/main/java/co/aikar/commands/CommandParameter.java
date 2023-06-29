@@ -27,7 +27,7 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
-import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Flag;
 import co.aikar.commands.annotation.Name;
 import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Single;
@@ -37,40 +37,55 @@ import co.aikar.commands.contexts.ContextResolver;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import co.aikar.commands.contexts.IssuerOnlyContextResolver;
 import co.aikar.commands.contexts.OptionalContextResolver;
+import lombok.Getter;
 
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends CommandIssuer>> {
+    @Getter
     private final Parameter parameter;
+    @Getter
     private final Class<?> type;
+    @Getter
     private final String name;
+    @Getter
     private final CommandManager manager;
+    @Getter
     private final int paramIndex;
-
+    boolean consumesRest;
+    @Getter
     private ContextResolver<?, CEC> resolver;
+    @Getter
     private boolean optional;
-    private Set<String> permissions = new HashSet<>();
-    private String permission;
+    private final Set<String> permissions = new HashSet<>();
+    private final String permission;
+    @Getter
     private String description;
+    @Getter
     private String defaultValue;
     private String syntax;
+    @Getter
     private String conditions;
     private boolean requiresInput;
+    @Getter
     private boolean commandIssuer;
+    @Getter
     private String[] values;
-    private Map<String, String> flags;
     private boolean canConsumeInput;
+    @Getter
     private boolean optionalResolver;
-    boolean consumesRest;
-    private boolean isLast;
-    private boolean isOptionalInput;
+    private final boolean isLast;
+    private final boolean isOptionalInput;
+    @Getter
     private CommandParameter<CEC> nextParam;
-
+    private boolean isFlag;
+    @Getter
+    private String flag;
+    @Getter
+    private String[] flagAliases;
     public CommandParameter(RegisteredCommand<CEC> command, Parameter param, int paramIndex, boolean isLast) {
         this.parameter = param;
         this.isLast = isLast;
@@ -85,6 +100,15 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
         this.description = annotations.getAnnotationValue(param, Description.class, Annotations.REPLACEMENTS | Annotations.DEFAULT_EMPTY);
         this.conditions = annotations.getAnnotationValue(param, Conditions.class, Annotations.REPLACEMENTS | Annotations.NO_EMPTY);
 
+        if (annotations.hasAnnotation(param, Flag.class)) {
+            if (type != boolean.class && type != Boolean.class) {
+                ACFUtil.sneaky(new InvalidCommandArgument("Flag parameters must be boolean"));
+            }
+            this.isFlag = true;
+            this.flag = annotations.getAnnotationValue(param, Flag.class, Annotations.REPLACEMENTS | Annotations.NO_EMPTY);
+            this.flagAliases = annotations.getFlagAliases(param, Flag.class, Annotations.REPLACEMENTS | Annotations.NO_EMPTY);
+        }
+
         //noinspection unchecked
         this.resolver = manager.getCommandContexts().getResolver(type);
         if (this.resolver == null) {
@@ -96,10 +120,10 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
         this.optional = annotations.hasAnnotation(param, Optional.class) || this.defaultValue != null || (isLast && type == String[].class);
         this.permission = annotations.getAnnotationValue(param, CommandPermission.class, Annotations.REPLACEMENTS | Annotations.NO_EMPTY);
         this.optionalResolver = isOptionalResolver(resolver);
-        this.requiresInput = !this.optional && !this.optionalResolver;
+        this.requiresInput = !this.optional && !this.optionalResolver && !this.isFlag;
         //noinspection unchecked
         this.commandIssuer = paramIndex == 0 && manager.isCommandIssuer(type);
-        this.canConsumeInput = !this.commandIssuer && !(resolver instanceof IssuerOnlyContextResolver);
+        this.canConsumeInput = !this.commandIssuer && !(resolver instanceof IssuerOnlyContextResolver) || this.isFlag;
         this.consumesRest = isLast && ((type == String.class && !annotations.hasAnnotation(param, Single.class)) || (type == String[].class));
 
         this.values = annotations.getAnnotationValues(param, Values.class, Annotations.REPLACEMENTS | Annotations.NO_EMPTY);
@@ -111,36 +135,11 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
             this.syntax = annotations.getAnnotationValue(param, Syntax.class);
         }
 
-        this.flags = new HashMap<>();
-        String flags = annotations.getAnnotationValue(param, Flags.class, Annotations.REPLACEMENTS | Annotations.NO_EMPTY);
-        if (flags != null) {
-            parseFlags(flags);
-        }
-        inheritContextFlags(command.scope);
         this.computePermissions();
     }
 
-    private void inheritContextFlags(BaseCommand scope) {
-        if (!scope.contextFlags.isEmpty()) {
-            Class<?> pCls = this.type;
-            do {
-                parseFlags(scope.contextFlags.get(pCls));
-            } while ((pCls = pCls.getSuperclass()) != null);
-        }
-        if (scope.parentCommand != null) {
-            inheritContextFlags(scope.parentCommand);
-        }
-    }
-
-    private void parseFlags(String flags) {
-        if (flags != null) {
-            for (String s : ACFPatterns.COMMA.split(manager.getCommandReplacements().replace(flags))) {
-                String[] v = ACFPatterns.EQUALS.split(s, 2);
-                if (!this.flags.containsKey(v[0])) {
-                    this.flags.put(v[0], v.length > 1 ? v[1] : null);
-                }
-            }
-        }
+    public boolean isFlag() {
+        return isFlag;
     }
 
     private void computePermissions() {
@@ -157,30 +156,6 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
     }
 
 
-    public Parameter getParameter() {
-        return parameter;
-    }
-
-    public Class<?> getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public CommandManager getManager() {
-        return manager;
-    }
-
-    public int getParamIndex() {
-        return paramIndex;
-    }
-
-    public ContextResolver<?, CEC> getResolver() {
-        return resolver;
-    }
-
     public void setResolver(ContextResolver<?, CEC> resolver) {
         this.resolver = resolver;
     }
@@ -189,52 +164,24 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
         return isOptionalInput;
     }
 
-    public boolean isOptional() {
-        return optional;
-    }
-
     public void setOptional(boolean optional) {
         this.optional = optional;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
-    }
-
-    public boolean isCommandIssuer() {
-        return commandIssuer;
     }
 
     public void setCommandIssuer(boolean commandIssuer) {
         this.commandIssuer = commandIssuer;
     }
 
-    public String[] getValues() {
-        return values;
-    }
-
     public void setValues(String[] values) {
         this.values = values;
-    }
-
-    public Map<String, String> getFlags() {
-        return flags;
-    }
-
-    public void setFlags(Map<String, String> flags) {
-        this.flags = flags;
     }
 
     public boolean canConsumeInput() {
@@ -249,10 +196,6 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
         this.optionalResolver = optionalResolver;
     }
 
-    public boolean isOptionalResolver() {
-        return optionalResolver;
-    }
-
     public boolean requiresInput() {
         return requiresInput;
     }
@@ -263,6 +206,10 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
 
     public String getSyntax() {
         if (syntax == null) {
+            if (isFlag) {
+                return "(-" + flag + ")";
+            }
+
             if (isOptionalInput) {
                 return "[" + name + "]";
             } else if (requiresInput) {
@@ -276,10 +223,6 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
         this.syntax = syntax;
     }
 
-    public String getConditions() {
-        return conditions;
-    }
-
     public void setConditions(String conditions) {
         this.conditions = conditions;
     }
@@ -290,10 +233,6 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
 
     public void setNextParam(CommandParameter<CEC> nextParam) {
         this.nextParam = nextParam;
-    }
-
-    public CommandParameter<CEC> getNextParam() {
-        return nextParam;
     }
 
     public boolean canExecuteWithoutInput() {
