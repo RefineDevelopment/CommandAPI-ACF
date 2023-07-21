@@ -31,13 +31,7 @@ class BukkitCommandContexts_1_12 {
             String arg = c.popFirstArg();
             String[] split = ACFPatterns.COLON.split(arg, 2);
             if (split.length == 1) {
-                String namespace = c.getFlagValue("namespace", (String) null);
-                if (namespace == null) {
-                    return NamespacedKey.minecraft(split[0]);
-                } else {
-                    //noinspection deprecation
-                    return new NamespacedKey(namespace, split[0]);
-                }
+                return NamespacedKey.minecraft(split[0]);
             } else {
                 //noinspection deprecation
                 return new NamespacedKey(split[0], split[1]);

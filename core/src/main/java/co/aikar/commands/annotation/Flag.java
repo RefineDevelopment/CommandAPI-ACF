@@ -37,6 +37,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
-public @interface Flags {
+public @interface Flag {
     String value();
+    String description() default "";
 }

@@ -60,10 +60,10 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
         registerContext(OnlinePlayer[].class, (c) -> {
             BukkitCommandIssuer issuer = c.getIssuer();
             final String search = c.popFirstArg();
-            boolean allowMissing = c.hasFlag("allowmissing");
+            boolean allowMissing = false;
             Set<OnlinePlayer> players = new HashSet<>();
             Pattern split = ACFPatterns.COMMA;
-            String splitter = c.getFlagValue("splitter", (String) null);
+            String splitter = ",";
             if (splitter != null) {
                 split = Pattern.compile(Pattern.quote(splitter));
             }
@@ -73,7 +73,7 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
                     players.add(player);
                 }
             }
-            if (players.isEmpty() && !c.hasFlag("allowempty")) {
+            if (players.isEmpty()) {
                 throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.NO_ONLINE_PLAYER_FOUND.replace("<search>", search), false);
             }
             return players.toArray(new OnlinePlayer[players.size()]);
@@ -97,52 +97,19 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
             boolean isOptional = c.isOptional();
             CommandSender sender = c.getSender();
             boolean isPlayerSender = sender instanceof Player;
-            if (!c.hasFlag("other")) {
-                Player player = isPlayerSender ? (Player) sender : null;
-                if (player == null && !isOptional) {
-                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.PLAYER_ONLY, false);
-                }
-                PlayerInventory inventory = player != null ? player.getInventory() : null;
-                if (inventory != null && c.hasFlag("itemheld") && !ACFBukkitUtil.isValidItem(inventory.getItem(inventory.getHeldItemSlot()))) {
-                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.MUST_HOLD_ITEM, false);
-                }
-                return player;
-            } else {
-                String arg = c.popFirstArg();
-                if (arg == null && isOptional) {
-                    if (c.hasFlag("defaultself")) {
-                        if (isPlayerSender) {
-                            return (Player) sender;
-                        } else {
-                            throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.PLAYER_ONLY, false);
-                        }
-                    } else {
-                        return null;
-                    }
-                } else if (arg == null) {
-                    throw new InvalidCommandArgument();
-                }
-
-                OnlinePlayer onlinePlayer = getOnlinePlayer(c.getIssuer(), arg, false);
-                return onlinePlayer.getPlayer();
+            Player player = isPlayerSender ? (Player) sender : null;
+            if (player == null && !isOptional) {
+                throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.PLAYER_ONLY, false);
             }
+            return player;
+
         });
         registerContext(OfflinePlayer.class, c -> {
             String name = c.popFirstArg();
             OfflinePlayer offlinePlayer;
-            if (c.hasFlag("uuid")) {
-                UUID uuid;
-                try {
-                    uuid = UUID.fromString(name);
-                } catch (IllegalArgumentException e) {
-                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.NO_OFFLINE_PLAYER_FOUND.replace("<search>", name));
-                }
-                offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-            } else {
-                offlinePlayer = Bukkit.getOfflinePlayer(name);
-            }
+            offlinePlayer = Bukkit.getOfflinePlayer(name);
             if (offlinePlayer == null || (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline())) {
-                if (!c.hasFlag("uuid") && !isValidName(name)) {
+                if (!isValidName(name)) {
                     throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.INVALID_USERNAME.replace("<name>", name));
                 }
                 throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.NO_OFFLINE_PLAYER_FOUND.replace("<search>", name));
@@ -152,15 +119,6 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
         registerContext(ChatColor.class, c -> {
             String first = c.popFirstArg();
             Stream<ChatColor> colors = Stream.of(ChatColor.values());
-            if (c.hasFlag("colorsonly")) {
-                colors = colors.filter(color -> color.ordinal() <= 0xF);
-            }
-            String filter = c.getFlagValue("filter", (String) null);
-            if (filter != null) {
-                filter = ACFUtil.simplifyString(filter);
-                String finalFilter = filter;
-                colors = colors.filter(color -> finalFilter.equals(ACFUtil.simplifyString(color.name())));
-            }
 
             ChatColor match = ACFUtil.simpleMatch(ChatColor.class, first);
             if (match == null) {

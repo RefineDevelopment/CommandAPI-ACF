@@ -77,6 +77,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
     final int consumeInputResolvers;
     final int doesNotConsumeInputResolvers;
     final int optionalResolvers;
+    final int flagResolvers;
 
     final Set<String> permissions = new HashSet<>();
 
@@ -110,6 +111,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
         int consumeInputResolvers = 0;
         int doesNotConsumeInputResolvers = 0;
         int optionalResolvers = 0;
+        int flagResolvers = 0;
 
         CommandParameter<CEC> previousParam = null;
         for (int i = 0; i < parameters.length; i++) {
@@ -119,7 +121,9 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
             }
             previousParam = parameter;
             if (!parameter.isCommandIssuer()) {
-                if (!parameter.requiresInput()) {
+                if (parameter.isFlag()) {
+                    flagResolvers++;
+                } else if (!parameter.requiresInput()) {
                     optionalResolvers++;
                 } else {
                     requiredResolvers++;
@@ -136,6 +140,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
         this.consumeInputResolvers = consumeInputResolvers;
         this.doesNotConsumeInputResolvers = doesNotConsumeInputResolvers;
         this.optionalResolvers = optionalResolvers;
+        this.flagResolvers = flagResolvers;
         this.computePermissions();
     }
 
@@ -227,6 +232,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
             final String parameterName = parameter.getName();
             final Class<?> type = parameter.getType();
             final ContextResolver<?, CEC> resolver = parameter.getResolver();
+
             //noinspection unchecked
             CEC context = (CEC) this.manager.createCommandContext(this, parameter, sender, args, i, passedArgs);
             boolean requiresInput = parameter.requiresInput();
@@ -236,6 +242,10 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
 
             Set<String> parameterPermissions = parameter.getRequiredPermissions();
             if (args.isEmpty() && !(isLast && type == String[].class)) {
+                if (parameter.isFlag()) {
+                    passedArgs.put(parameterName, false);
+                    continue;
+                }
                 if (allowOptional && parameter.getDefaultValue() != null) {
                     args.add(parameter.getDefaultValue());
                 } else if (allowOptional && parameter.isOptional()) {
@@ -286,6 +296,22 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
                     String msg = MessageConfig.IMP.ERROR.PLEASE_SPECIFY_ONE_OF.replace("<valid>", ACFUtil.join(possible, ", "));
                     throw new InvalidCommandArgument(msg);
                 }
+            }
+
+            if (parameter.isFlag()) {
+                boolean present = args.remove("-" + parameter.getFlag());
+
+                if (!present) {
+                    for (String alias : parameter.getFlagAliases()) {
+                        present = args.remove("-" + alias);
+                        if (present) {
+                            break;
+                        }
+                    }
+                }
+
+                passedArgs.put(parameterName, present);
+                continue;
             }
 
             Object paramValue = resolver.getContext(context);

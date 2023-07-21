@@ -27,10 +27,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 class Annotations<M extends CommandManager> extends AnnotationLookups {
 
@@ -98,6 +100,57 @@ class Annotations<M extends CommandManager> extends AnnotationLookups {
 
         // validation
         if (value.isEmpty() && hasOption(options, NO_EMPTY)) {
+            value = null;
+        }
+
+        return value;
+    }
+
+    String[] getFlagAliases(AnnotatedElement object, Class<? extends Annotation> annoClass, int options) {
+        Annotation annotation = getAnnotationRecursive(object, annoClass, new HashSet<>());
+        String[] value = null;
+
+        if (annotation != null) {
+            Method valueMethod = valueMethods.get(annoClass);
+            if (noValueAnnotations.containsKey(annoClass)) {
+                value = new String[0];
+            } else {
+                try {
+                    if (valueMethod == null) {
+                        valueMethod = annoClass.getMethod("value");
+                        valueMethod.setAccessible(true);
+                        valueMethods.put(annoClass, valueMethod);
+                    }
+                    value = (String[]) valueMethod.invoke(annotation);
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    if (!(e instanceof NoSuchMethodException)) {
+                        manager.log(LogLevel.ERROR, "Error getting annotation value", e);
+                    }
+                    noValueAnnotations.put(annoClass, null);
+                    value = new String[0];
+                }
+            }
+        }
+
+        // TODO: Aliases
+
+        if (value == null) {
+            if (hasOption(options, DEFAULT_EMPTY)) {
+                value = new String[0];
+            } else {
+                return null;
+            }
+        }
+
+        // transforms
+        if (hasOption(options, LOWERCASE)) {
+            value = Arrays.stream(value).map(String::toLowerCase).toArray(String[]::new);
+        } else if (hasOption(options, UPPERCASE)) {
+            value = Arrays.stream(value).map(String::toUpperCase).toArray(String[]::new);
+        }
+
+        // validation
+        if (Arrays.equals(value, new String[0]) && hasOption(options, NO_EMPTY)) {
             value = null;
         }
 

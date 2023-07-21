@@ -56,15 +56,6 @@ public class BungeeCommandContexts extends CommandContexts<BungeeCommandExecutio
         registerContext(ChatColor.class, c -> {
             String first = c.popFirstArg();
             Stream<ChatColor> colors = Stream.of(ChatColor.values());
-            if (c.hasFlag("colorsonly")) {
-                colors = colors.filter(color -> color.ordinal() <= 0xF);
-            }
-            String filter = c.getFlagValue("filter", (String) null);
-            if (filter != null) {
-                filter = ACFUtil.simplifyString(filter);
-                String finalFilter = filter;
-                colors = colors.filter(color -> finalFilter.equals(ACFUtil.simplifyString(color.name())));
-            }
 
             ChatColor match = null;
             String simplified = ACFUtil.simplifyString(first);

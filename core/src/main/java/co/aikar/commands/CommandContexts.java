@@ -138,7 +138,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
         registerContext(BigDecimal.class, (c) -> {
             String numberStr = c.popFirstArg();
             try {
-                BigDecimal number = ACFUtil.parseBigNumber(numberStr, c.hasFlag("suffixes"));
+                BigDecimal number = ACFUtil.parseBigNumber(numberStr, false);
                 validateMinMax(c, number);
                 return number;
             } catch (NumberFormatException e) {
@@ -148,7 +148,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
         registerContext(BigInteger.class, (c) -> {
             String numberStr = c.popFirstArg();
             try {
-                BigDecimal number = ACFUtil.parseBigNumber(numberStr, c.hasFlag("suffixes"));
+                BigDecimal number = ACFUtil.parseBigNumber(numberStr, false);
                 validateMinMax(c, number);
                 return number.toBigIntegerExact();
             } catch (NumberFormatException e) {
@@ -173,19 +173,6 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
                     ACFUtil.join(c.getArgs())
                     :
                     c.popFirstArg();
-
-            Integer minLen = c.getFlagValue("minlen", (Integer) null);
-            Integer maxLen = c.getFlagValue("maxlen", (Integer) null);
-            if (minLen != null) {
-                if (ret.length() < minLen) {
-                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LENGTH_TOO_SMALL.replace("<min>", String.valueOf(minLen)));
-                }
-            }
-            if (maxLen != null) {
-                if (ret.length() > maxLen) {
-                    throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.LENGTH_TOO_LARGE.replace("<max>", String.valueOf(maxLen)));
-                }
-            }
 
             return ret;
         });
@@ -252,10 +239,6 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
             }
             CommandHelp commandHelp = manager.generateCommandHelp();
             commandHelp.setPage(page);
-            Integer perPage = c.getFlagValue("perpage", (Integer) null);
-            if (perPage != null) {
-                commandHelp.setPerPage(perPage);
-            }
 
             // check if we have an exact match and should display the help page for that sub command instead
             if (search != null) {
@@ -272,7 +255,7 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
 
     @NotNull
     private Number parseAndValidateNumber(String number, R c, Number minValue, Number maxValue) throws InvalidCommandArgument {
-        final Number val = ACFUtil.parseNumber(number, c.hasFlag("suffixes"));
+        final Number val = ACFUtil.parseNumber(number, false);
         validateMinMax(c, val, minValue, maxValue);
         return val;
     }
@@ -282,8 +265,6 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
     }
 
     private void validateMinMax(R c, Number val, Number minValue, Number maxValue) throws InvalidCommandArgument {
-        minValue = c.getFlagValue("min", minValue);
-        maxValue = c.getFlagValue("max", maxValue);
         if (maxValue != null && val.doubleValue() > maxValue.doubleValue()) {
             throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLEASE_SPECIFY_AT_MOST.replace("<max>", String.valueOf(maxValue)));
         }
