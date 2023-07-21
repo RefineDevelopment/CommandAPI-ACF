@@ -106,7 +106,12 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
             }
             this.isFlag = true;
             this.flag = annotations.getAnnotationValue(param, Flag.class, Annotations.REPLACEMENTS | Annotations.NO_EMPTY);
-            this.flagAliases = annotations.getFlagAliases(param, Flag.class, Annotations.REPLACEMENTS | Annotations.NO_EMPTY);
+            this.flagAliases = new String[0];
+
+            if (flag.contains(ACFPatterns.PIPE.pattern())) {
+                flagAliases = ACFPatterns.PIPE.split(flag);
+                flag = flagAliases[0];
+            }
         }
 
         //noinspection unchecked
