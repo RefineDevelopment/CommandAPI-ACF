@@ -23,6 +23,7 @@
 
 package co.aikar.commands;
 
+import co.aikar.commands.annotation.Async;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
@@ -49,6 +50,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -61,7 +63,12 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
     final CommandParameter<CEC>[] parameters;
     final CommandManager manager;
     final List<String> registeredSubcommands = new ArrayList<>();
-
+    final int requiredResolvers;
+    final int consumeInputResolvers;
+    final int doesNotConsumeInputResolvers;
+    final int optionalResolvers;
+    final Set<String> permissions = new HashSet<>();
+    public String helpSearchTags;
     String command;
     String prefSubCommand;
     String syntaxText;
@@ -69,16 +76,8 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
     String permission;
     String complete;
     String conditions;
-    public String helpSearchTags;
-
     boolean isPrivate;
-
-    final int requiredResolvers;
-    final int consumeInputResolvers;
-    final int doesNotConsumeInputResolvers;
-    final int optionalResolvers;
-
-    final Set<String> permissions = new HashSet<>();
+    boolean isAsync;
 
     RegisteredCommand(BaseCommand scope, String command, Method method, String prefSubCommand) {
         this.scope = scope;
@@ -89,6 +88,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
             prefSubCommand = "";
             command = command.trim();
         }
+
         this.command = command + (!annotations.hasAnnotation(method, CommandAlias.class, false) && !prefSubCommand.isEmpty() ? prefSubCommand : "");
         this.method = method;
         this.prefSubCommand = prefSubCommand;
@@ -105,6 +105,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
         this.parameters = new CommandParameter[parameters.length];
 
         this.isPrivate = annotations.hasAnnotation(method, Private.class) || annotations.getAnnotationFromClass(scope.getClass(), Private.class) != null;
+        this.isAsync = annotations.hasAnnotation(method, Async.class) || annotations.hasAnnotation(scope.getClass(), Private.class);
 
         int requiredResolvers = 0;
         int consumeInputResolvers = 0;
@@ -144,19 +145,44 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
         if (!scope.canExecute(sender, this)) {
             return;
         }
+
         preCommand();
         try {
             this.manager.getCommandConditions().validateConditions(context);
-            Map<String, Object> passedArgs = resolveContexts(sender, args);
-            if (passedArgs == null) return;
 
-            Object obj = method.invoke(scope, passedArgs.values().toArray());
-            if (obj instanceof CompletionStage<?>) {
-                CompletionStage<?> future = (CompletionStage<?>) obj;
-                future.exceptionally(t -> {
-                    handleException(sender, args, t);
-                    return null;
-                });
+            if (isAsync) {
+                CompletableFuture.supplyAsync(() -> resolveContexts(sender, args)).whenCompleteAsync(((passedArgs, exception) -> {
+                    if (exception != null) {
+                        handleException(sender, args, exception);
+                    }
+
+                    try {
+                        Object obj = method.invoke(scope, passedArgs.values().toArray());
+
+                        if (obj instanceof CompletionStage<?>) {
+                            CompletionStage<?> future = (CompletionStage<?>) obj;
+                            future.exceptionally(t -> {
+                                handleException(sender, args, t);
+                                return null;
+                            });
+                        }
+                    } catch (Exception e) {
+                        handleException(sender, args, e);
+                    }
+                }));
+            } else {
+                Map<String, Object> passedArgs = resolveContexts(sender, args);
+                if (passedArgs == null) return;
+
+                Object obj = method.invoke(scope, passedArgs.values().toArray());
+
+                if (obj instanceof CompletionStage<?>) {
+                    CompletionStage<?> future = (CompletionStage<?>) obj;
+                    future.exceptionally(t -> {
+                        handleException(sender, args, t);
+                        return null;
+                    });
+                }
             }
         } catch (Exception e) {
             handleException(sender, args, e);
@@ -216,9 +242,12 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
     @Nullable
     Map<String, Object> resolveContexts(CommandIssuer sender, List<String> args, String name) throws InvalidCommandArgument {
         args = new ArrayList<>(args);
-        String[] origArgs = args.toArray(new String[args.size()]);
+
+        String[] origArgs = args.toArray(new String[0]);
+
         Map<String, Object> passedArgs = new LinkedHashMap<>();
         int remainingRequired = requiredResolvers;
+
         CommandOperationContext opContext = CommandManager.getCurrentCommandOperationContext();
         for (int i = 0; i < parameters.length && (name == null || !passedArgs.containsKey(name)); i++) {
             boolean isLast = i == parameters.length - 1;
@@ -332,6 +361,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
     public String getPrefSubCommand() {
         return prefSubCommand;
     }
+
     public String getSyntaxText() {
         if (syntaxText != null) return syntaxText;
         StringBuilder syntaxBuilder = new StringBuilder(64);
