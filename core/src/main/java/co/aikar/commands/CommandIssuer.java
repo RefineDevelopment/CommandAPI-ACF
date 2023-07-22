@@ -50,7 +50,7 @@ public interface CommandIssuer {
      * @param message
      */
     default void sendMessage(String message) {
-        getManager().sendMessage(this, MessageConfig.IMP.FORMATS.INFO_MESSAGE.replace("<message>", message));
+        getManager().sendMessage(this, message);
     }
 
     /**
