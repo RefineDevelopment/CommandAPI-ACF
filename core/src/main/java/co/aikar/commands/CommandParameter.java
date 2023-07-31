@@ -146,7 +146,7 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
     private void computePermissions() {
         this.permissions.clear();
         if (this.permission != null && !this.permission.isEmpty()) {
-            this.permissions.addAll(Arrays.asList(ACFPatterns.COMMA.split(this.permission)));
+            this.permissions.addAll(Arrays.asList(this.permission.split(",")));
         }
     }
 

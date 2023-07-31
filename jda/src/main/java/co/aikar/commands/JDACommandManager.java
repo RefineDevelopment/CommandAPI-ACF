@@ -149,7 +149,7 @@ public class JDACommandManager extends CommandManager<
     public void registerCommand(BaseCommand command) {
         command.onRegister(this);
         for (Map.Entry<String, RootCommand> entry : command.registeredCommands.entrySet()) {
-            String commandName = entry.getKey().toLowerCase(Locale.ENGLISH);
+            String commandName = entry.getKey().toLowerCase();
             JDARootCommand cmd = (JDARootCommand) entry.getValue();
             if (!cmd.isRegistered) {
                 cmd.isRegistered = true;
@@ -160,7 +160,7 @@ public class JDACommandManager extends CommandManager<
 
     public void unregisterCommand(BaseCommand command) {
         for (Map.Entry<String, RootCommand> entry : command.registeredCommands.entrySet()) {
-            String jdaCommandName = entry.getKey().toLowerCase(Locale.ENGLISH);
+            String jdaCommandName = entry.getKey().toLowerCase();
             JDARootCommand jdaCommand = (JDARootCommand) entry.getValue();
             jdaCommand.getSubCommands().values().removeAll(command.subCommands.values());
             if (jdaCommand.isRegistered && jdaCommand.getSubCommands().isEmpty()) {
@@ -242,7 +242,7 @@ public class JDACommandManager extends CommandManager<
         if (args.length == 0) {
             return;
         }
-        String cmd = args[0].toLowerCase(Locale.ENGLISH);
+        String cmd = args[0].toLowerCase();
         JDARootCommand rootCommand = this.commands.get(cmd);
         if (rootCommand == null) {
             return;

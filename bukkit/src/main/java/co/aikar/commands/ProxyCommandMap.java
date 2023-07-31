@@ -60,7 +60,7 @@ class ProxyCommandMap extends SimpleCommandMap {
 
     boolean isOurCommand(String cmdLine) {
         String[] args = ACFPatterns.SPACE.split(cmdLine);
-        return args.length != 0 && isOurCommand(knownCommands.get(args[0].toLowerCase(Locale.ENGLISH)));
+        return args.length != 0 && isOurCommand(knownCommands.get(args[0].toLowerCase()));
 
     }
     boolean isOurCommand(Command command) {

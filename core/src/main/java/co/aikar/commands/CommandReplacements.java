@@ -60,7 +60,7 @@ public class CommandReplacements {
 
     @Nullable
     private String addReplacement0(String key, String val) {
-        key = ACFPatterns.PERCENTAGE.matcher(key.toLowerCase(Locale.ENGLISH)).replaceAll("");
+        key = ACFPatterns.PERCENTAGE.matcher(key.toLowerCase()).replaceAll("");
         Pattern pattern = Pattern.compile("%\\{" + Pattern.quote(key) + "}|%" + Pattern.quote(key) + "\\b",
                 Pattern.CASE_INSENSITIVE);
 

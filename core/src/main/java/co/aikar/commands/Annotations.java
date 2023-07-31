@@ -23,6 +23,8 @@
 
 package co.aikar.commands;
 
+import lombok.RequiredArgsConstructor;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
@@ -32,6 +34,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+@RequiredArgsConstructor
 class Annotations<M extends CommandManager> extends AnnotationLookups {
 
     public static final int NOTHING = 0;
@@ -45,10 +48,6 @@ class Annotations<M extends CommandManager> extends AnnotationLookups {
 
     private final Map<Class<? extends Annotation>, Method> valueMethods = new IdentityHashMap<>();
     private final Map<Class<? extends Annotation>, Void> noValueAnnotations = new IdentityHashMap<>();
-
-    Annotations(M manager) {
-        this.manager = manager;
-    }
 
     String getAnnotationValue(AnnotatedElement object, Class<? extends Annotation> annoClass, int options) {
         Annotation annotation = getAnnotationRecursive(object, annoClass, new HashSet<>());

@@ -23,10 +23,13 @@
 
 package co.aikar.commands;
 
+import lombok.Getter;
+
 public class HelpEntry {
 
     private final CommandHelp commandHelp;
     private final RegisteredCommand command;
+    @Getter
     private int searchScore = 1;
 
     HelpEntry(CommandHelp commandHelp, RegisteredCommand command) {
@@ -60,10 +63,6 @@ public class HelpEntry {
 
     public boolean shouldShow() {
         return this.searchScore > 0;
-    }
-
-    public int getSearchScore() {
-        return searchScore;
     }
 
     public String getSearchTags() {

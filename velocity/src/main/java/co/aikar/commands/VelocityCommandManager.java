@@ -92,7 +92,7 @@ public class VelocityCommandManager extends CommandManager<CommandSource, Veloci
     public void registerCommand(BaseCommand command, boolean force) {
         command.onRegister(this);
         for (Map.Entry<String, RootCommand> entry : command.registeredCommands.entrySet()) {
-            String commandName = entry.getKey().toLowerCase(Locale.ENGLISH);
+            String commandName = entry.getKey().toLowerCase();
             VelocityRootCommand velocityCommand = (VelocityRootCommand) entry.getValue();
             if (!velocityCommand.isRegistered) {
                 if (force) {
@@ -108,7 +108,7 @@ public class VelocityCommandManager extends CommandManager<CommandSource, Veloci
 
     public void unregisterCommand(BaseCommand command) {
         for (Map.Entry<String, RootCommand> entry : command.registeredCommands.entrySet()) {
-            String commandName = entry.getKey().toLowerCase(Locale.ENGLISH);
+            String commandName = entry.getKey().toLowerCase();
             VelocityRootCommand velocityCommand = (VelocityRootCommand) entry.getValue();
             velocityCommand.getSubCommands().values().removeAll(command.subCommands.values());
             if (velocityCommand.getSubCommands().isEmpty() && velocityCommand.isRegistered) {

@@ -34,6 +34,7 @@ import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Syntax;
 import co.aikar.commands.config.impl.MessageConfig;
 import co.aikar.commands.contexts.ContextResolver;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
@@ -58,26 +59,27 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extends CommandIssuer>> {
-    final BaseCommand scope;
-    final Method method;
-    final CommandParameter<CEC>[] parameters;
-    final CommandManager manager;
-    final List<String> registeredSubcommands = new ArrayList<>();
-    final int requiredResolvers;
-    final int consumeInputResolvers;
-    final int doesNotConsumeInputResolvers;
-    final int optionalResolvers;
-    final Set<String> permissions = new HashSet<>();
+    public final BaseCommand scope;
+    public final Method method;
+    public final CommandParameter<CEC>[] parameters;
+    public final CommandManager manager;
+    public final List<String> registeredSubcommands = new ArrayList<>();
+    public final int requiredResolvers;
+    public final int consumeInputResolvers;
+    public final int doesNotConsumeInputResolvers;
+    public final int optionalResolvers;
+    public final Set<String> permissions = new HashSet<>();
     public String helpSearchTags;
-    String command;
-    String prefSubCommand;
-    String syntaxText;
-    String helpText;
-    String permission;
-    String complete;
-    String conditions;
-    boolean isPrivate;
-    boolean isAsync;
+
+    @Getter public String command;
+    @Getter public String prefSubCommand;
+    public String syntaxText;
+    public String helpText;
+    public String permission;
+    public String complete;
+    public String conditions;
+    public boolean isPrivate;
+    public boolean isAsync;
 
     RegisteredCommand(BaseCommand scope, String command, Method method, String prefSubCommand) {
         this.scope = scope;
@@ -142,10 +144,6 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
 
 
     void invoke(CommandIssuer sender, List<String> args, CommandOperationContext context) {
-        if (!scope.canExecute(sender, this)) {
-            return;
-        }
-
         preCommand();
         try {
             this.manager.getCommandConditions().validateConditions(context);
@@ -309,10 +307,10 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
                         possible.addAll(check.stream().filter(Objects::nonNull).
                                 map(String::toLowerCase).collect(Collectors.toList()));
                     } else {
-                        possible.add(s.toLowerCase(Locale.ENGLISH));
+                        possible.add(s.toLowerCase());
                     }
                 }
-                if (!possible.contains(arg.toLowerCase(Locale.ENGLISH))) {
+                if (!possible.contains(arg.toLowerCase())) {
                     String msg = MessageConfig.IMP.ERROR.PLEASE_SPECIFY_ONE_OF.replace("<valid>", ACFUtil.join(possible, ", "));
                     throw new InvalidCommandArgument(msg);
                 }
@@ -340,14 +338,14 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
         if (this.permission == null || this.permission.isEmpty()) {
             return null;
         }
-        return ACFPatterns.COMMA.split(this.permission)[0];
+        return this.permission.split(",")[0];
     }
 
     void computePermissions() {
         this.permissions.clear();
         this.permissions.addAll(this.scope.getRequiredPermissions());
         if (this.permission != null && !this.permission.isEmpty()) {
-            this.permissions.addAll(Arrays.asList(ACFPatterns.COMMA.split(this.permission)));
+            this.permissions.addAll(Arrays.asList(this.permission.split(",")));
         }
     }
 
@@ -357,10 +355,6 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
 
     public boolean requiresPermission(String permission) {
         return getRequiredPermissions().contains(permission);
-    }
-
-    public String getPrefSubCommand() {
-        return prefSubCommand;
     }
 
     public String getSyntaxText() {
@@ -384,10 +378,6 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
 
     public boolean isPrivate() {
         return isPrivate;
-    }
-
-    public String getCommand() {
-        return command;
     }
 
     public void addSubcommand(String cmd) {

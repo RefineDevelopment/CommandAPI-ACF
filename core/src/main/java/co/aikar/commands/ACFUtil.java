@@ -190,7 +190,7 @@ public final class ACFUtil {
         if (str == null) {
             return null;
         }
-        return ACFPatterns.NON_ALPHA_NUMERIC.matcher(str.toLowerCase(Locale.ENGLISH)).replaceAll("");
+        return ACFPatterns.NON_ALPHA_NUMERIC.matcher(str.toLowerCase()).replaceAll("");
     }
 
     public static double round(double x, int scale) {
@@ -383,7 +383,7 @@ public final class ACFUtil {
     }
 
     public static String capitalizeFirst(String name, char separator) {
-        name = name.toLowerCase(Locale.ENGLISH);
+        name = name.toLowerCase();
         String[] split = name.split(Character.toString(separator));
         StringBuilder total = new StringBuilder(3);
         for (String s : split) {

@@ -24,7 +24,6 @@
 package co.aikar.commands;
 
 import co.aikar.commands.CommandRouter.RouteSearch;
-import co.aikar.commands.annotation.CatchAll;
 import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
@@ -34,11 +33,11 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.HelpCommand;
 import co.aikar.commands.annotation.PreCommand;
 import co.aikar.commands.annotation.Subcommand;
-import co.aikar.commands.annotation.UnknownHandler;
 import co.aikar.commands.apachecommonslang.ApacheCommonsLangUtil;
 import co.aikar.commands.config.impl.MessageConfig;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -52,7 +51,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -94,34 +92,18 @@ public abstract class BaseCommand {
      * A map of flags to pass to Context Resolution for every parameter of the type. This is like an automatic @Flags on each.
      */
     final Map<Class<?>, String> contextFlags = new HashMap<>();
-
     /**
-     * What method was annoated with {@link PreCommand} to execute before commands.
+     * The last operative context data of this command. This may be null if this command is not currently being executed.
      */
-    @Nullable
-    private Method preCommandHandler;
-
+    private final ThreadLocal<CommandOperationContext> lastCommandOperationContext = new ThreadLocal<>();
     /**
-     * What root command the user actually entered to access the currently executing command
+     * The permissions of the command.
      */
-    @SuppressWarnings("WeakerAccess")
-    private String execLabel;
-    /**
-     * What subcommand the user actually entered to access the currently executing command
-     */
-    @SuppressWarnings("WeakerAccess")
-    private String execSubcommand;
-    /**
-     * What arguments the user actually entered after the root command to access the currently executing command
-     */
-    @SuppressWarnings("WeakerAccess")
-    private String[] origArgs;
-
+    private final Set<String> permissions = new HashSet<>();
     /**
      * The manager this is registered to
      */
     CommandManager<?, ?, ?, ?> manager = null;
-
     /**
      * The command which owns this. This may be null if there are no owners.
      */
@@ -148,25 +130,43 @@ public abstract class BaseCommand {
      * Identifies if the command has an explicit help command annotated with {@link HelpCommand}
      */
     boolean hasHelpCommand;
-
+    /**
+     * What method was annoated with {@link PreCommand} to execute before commands.
+     */
+    @Nullable
+    private Method preCommandHandler;
+    /**
+     * What root command the user actually entered to access the currently executing command
+     */
+    @SuppressWarnings("WeakerAccess")
+    private String execLabel;
+    /**
+     * What subcommand the user actually entered to access the currently executing command
+     * Gets the actual sub command name the user typed
+     *
+     * @return Name
+     */
+    @Getter
+    @SuppressWarnings("WeakerAccess")
+    private String execSubcommand;
+    /**
+     * What arguments the user actually entered after the root command to access the currently executing command
+     * Gets the actual args in string form the user typed
+     *
+     * @return Args
+     */
+    @Getter
+    @SuppressWarnings("WeakerAccess")
+    private String[] origArgs;
     /**
      * The handler of all uncaught exceptions thrown by the user's command implementation.
      */
     private ExceptionHandler exceptionHandler = null;
     /**
-     * The last operative context data of this command. This may be null if this command is not currently being executed.
-     */
-    private final ThreadLocal<CommandOperationContext> lastCommandOperationContext = new ThreadLocal<>();
-    /**
      * If a parent exists to this command, and it has  a Subcommand annotation, prefix all subcommands in this class with this
      */
     @Nullable
     private String parentSubcommand;
-
-    /**
-     * The permissions of the command.
-     */
-    private final Set<String> permissions = new HashSet<>();
 
     public BaseCommand() {
     }
@@ -180,6 +180,63 @@ public abstract class BaseCommand {
     @Deprecated
     public BaseCommand(@Nullable String cmd) {
         this.commandName = cmd;
+    }
+
+    /**
+     * Takes a string like "foo|bar baz|qux" and generates a list of
+     * - foo baz
+     * - foo qux
+     * - bar baz
+     * - bar qux
+     * <p>
+     * For every possible sub command combination
+     *
+     * @param subCommandParts
+     * @return List of all sub command possibilities
+     */
+    private static Set<String> getSubCommandPossibilityList(String[] subCommandParts) {
+        int i = 0;
+        Set<String> current = null;
+        while (true) {
+            Set<String> newList = new HashSet<>();
+
+            if (i < subCommandParts.length) {
+                for (String s1 : ACFPatterns.PIPE.split(subCommandParts[i])) {
+                    if (current != null) {
+                        newList.addAll(current.stream().map(s -> s + " " + s1).collect(Collectors.toList()));
+                    } else {
+                        newList.add(s1);
+                    }
+                }
+            }
+
+            if (i + 1 < subCommandParts.length) {
+                current = newList;
+                i = i + 1;
+                continue;
+            }
+
+            return newList;
+        }
+    }
+
+    static boolean isSpecialSubcommand(String key) {
+        return CATCHUNKNOWN.equals(key) || DEFAULT.equals(key);
+    }
+
+    /**
+     * Gets the actual args in string form the user typed
+     * This returns a list of all tab complete options which are possible with the given argument and commands.
+     *
+     * @param arg  Argument which was pressed tab on.
+     * @param cmds The possibilities to return.
+     * @return All possible options. This may be empty.
+     */
+    private static List<String> filterTabComplete(String arg, List<String> cmds) {
+        return cmds.stream()
+                .distinct()
+                .filter(cmd -> cmd != null && (arg.isEmpty() || ApacheCommonsLangUtil.startsWithIgnoreCase(cmd, arg)))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -199,24 +256,6 @@ public abstract class BaseCommand {
      */
     public String getExecCommandLabel() {
         return execLabel;
-    }
-
-    /**
-     * Gets the actual sub command name the user typed
-     *
-     * @return Name
-     */
-    public String getExecSubcommand() {
-        return execSubcommand;
-    }
-
-    /**
-     * Gets the actual args in string form the user typed
-     *
-     * @return Args
-     */
-    public String[] getOrigArgs() {
-        return origArgs;
     }
 
     /**
@@ -249,7 +288,7 @@ public abstract class BaseCommand {
             cmd = cmdAliases[0];
         }
 
-        this.commandName = cmd != null ? cmd : self.getSimpleName().toLowerCase(Locale.ENGLISH);
+        this.commandName = cmd != null ? cmd : self.getSimpleName().toLowerCase();
         this.permission = annotations.getAnnotationValue(self, CommandPermission.class, Annotations.REPLACEMENTS);
         this.description = annotations.getAnnotationValue(self, Description.class, Annotations.NO_EMPTY | Annotations.REPLACEMENTS);
         this.parentSubcommand = getParentSubcommand(self);
@@ -280,32 +319,32 @@ public abstract class BaseCommand {
      */
     private void registerSubclasses(String cmd) {
         for (Class<?> clazz : this.getClass().getDeclaredClasses()) {
-            if (BaseCommand.class.isAssignableFrom(clazz)) {
-                try {
-                    BaseCommand subScope = null;
-                    Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
-                    for (Constructor<?> declaredConstructor : declaredConstructors) {
+            if (!BaseCommand.class.isAssignableFrom(clazz)) continue;
 
-                        declaredConstructor.setAccessible(true);
-                        Parameter[] parameters = declaredConstructor.getParameters();
-                        if (parameters.length == 1) {
-                            subScope = (BaseCommand) declaredConstructor.newInstance(this);
-                        } else {
-                            manager.log(LogLevel.INFO, "Found unusable constructor: " + declaredConstructor.getName() + "(" + Stream.of(parameters).map(p -> p.getType().getSimpleName() + " " + p.getName()).collect(Collectors.joining("<c2>,</c2> ")) + ")");
-                        }
-                    }
-                    if (subScope != null) {
-                        subScope.parentCommand = this;
-                        this.subScopes.add(subScope);
-                        subScope.onRegister(manager, cmd);
-                        this.subCommands.putAll(subScope.subCommands);
-                        this.registeredCommands.putAll(subScope.registeredCommands);
+            try {
+                BaseCommand subScope = null;
+                Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
+                for (Constructor<?> declaredConstructor : declaredConstructors) {
+
+                    declaredConstructor.setAccessible(true);
+                    Parameter[] parameters = declaredConstructor.getParameters();
+                    if (parameters.length == 1) {
+                        subScope = (BaseCommand) declaredConstructor.newInstance(this);
                     } else {
-                        this.manager.log(LogLevel.ERROR, "Could not find a subcommand ctor for " + clazz.getName());
+                        manager.log(LogLevel.INFO, "Found unusable constructor: " + declaredConstructor.getName() + "(" + Stream.of(parameters).map(p -> p.getType().getSimpleName() + " " + p.getName()).collect(Collectors.joining("<c2>,</c2> ")) + ")");
                     }
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    this.manager.log(LogLevel.ERROR, "Error registering subclass", e);
                 }
+                if (subScope != null) {
+                    subScope.parentCommand = this;
+                    this.subScopes.add(subScope);
+                    subScope.onRegister(manager, cmd);
+                    this.subCommands.putAll(subScope.subCommands);
+                    this.registeredCommands.putAll(subScope.registeredCommands);
+                } else {
+                    this.manager.log(LogLevel.ERROR, "Could not find a subcommand ctor for " + clazz.getName());
+                }
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                this.manager.log(LogLevel.ERROR, "Error registering subclass", e);
             }
         }
     }
@@ -346,9 +385,7 @@ public abstract class BaseCommand {
             }
 
             boolean preCommand = annotations.hasAnnotation(method, PreCommand.class);
-            boolean hasCatchUnknown = annotations.hasAnnotation(method, CatchUnknown.class) ||
-                    annotations.hasAnnotation(method, CatchAll.class) ||
-                    annotations.hasAnnotation(method, UnknownHandler.class);
+            boolean hasCatchUnknown = annotations.hasAnnotation(method, CatchUnknown.class);
 
             if (hasCatchUnknown || (!foundCatchUnknown && helpCommand != null)) {
                 if (!foundCatchUnknown) {
@@ -379,7 +416,7 @@ public abstract class BaseCommand {
     private void computePermissions() {
         this.permissions.clear();
         if (this.permission != null && !this.permission.isEmpty()) {
-            this.permissions.addAll(Arrays.asList(ACFPatterns.COMMA.split(this.permission)));
+            this.permissions.addAll(Arrays.asList(this.permission.split(",")));
         }
         if (this.parentCommand != null) {
             this.permissions.addAll(this.parentCommand.getRequiredPermissions());
@@ -424,7 +461,7 @@ public abstract class BaseCommand {
      * @param cmd  The {@link BaseCommand} to add as a child to the {@link RootCommand} owned name field.
      */
     private void register(String name, BaseCommand cmd) {
-        String nameLower = name.toLowerCase(Locale.ENGLISH);
+        String nameLower = name.toLowerCase();
         RootCommand rootCommand = manager.obtainRootCommand(nameLower);
         rootCommand.addChild(cmd);
 
@@ -438,7 +475,7 @@ public abstract class BaseCommand {
      * @param subCommand The subcommand's name(s).
      */
     private void registerSubcommand(Method method, String subCommand) {
-        subCommand = manager.getCommandReplacements().replace(subCommand.toLowerCase(Locale.ENGLISH));
+        subCommand = manager.getCommandReplacements().replace(subCommand.toLowerCase());
         final String[] subCommandParts = ACFPatterns.SPACE.split(subCommand);
         // Must run getSubcommandPossibility BEFORE we rewrite it just after this.
         Set<String> cmdList = getSubCommandPossibilityList(subCommandParts);
@@ -466,44 +503,6 @@ public abstract class BaseCommand {
             for (String name : aliasNames) {
                 register(name, new ForwardingCommand(this, cmd, subCommandParts));
             }
-        }
-    }
-
-    /**
-     * Takes a string like "foo|bar baz|qux" and generates a list of
-     * - foo baz
-     * - foo qux
-     * - bar baz
-     * - bar qux
-     * <p>
-     * For every possible sub command combination
-     *
-     * @param subCommandParts
-     * @return List of all sub command possibilities
-     */
-    private static Set<String> getSubCommandPossibilityList(String[] subCommandParts) {
-        int i = 0;
-        Set<String> current = null;
-        while (true) {
-            Set<String> newList = new HashSet<>();
-
-            if (i < subCommandParts.length) {
-                for (String s1 : ACFPatterns.PIPE.split(subCommandParts[i])) {
-                    if (current != null) {
-                        newList.addAll(current.stream().map(s -> s + " " + s1).collect(Collectors.toList()));
-                    } else {
-                        newList.add(s1);
-                    }
-                }
-            }
-
-            if (i + 1 < subCommandParts.length) {
-                current = newList;
-                i = i + 1;
-                continue;
-            }
-
-            return newList;
         }
     }
 
@@ -568,32 +567,18 @@ public abstract class BaseCommand {
         return CommandManager.getCurrentCommandManager();
     }
 
-    private void executeCommand(CommandOperationContext commandOperationContext,
-                                CommandIssuer issuer, String[] args, RegisteredCommand cmd) {
-        if (cmd.hasPermission(issuer)) {
-            commandOperationContext.setRegisteredCommand(cmd);
-            if (checkPrecommand(commandOperationContext, cmd, issuer, args)) {
-                return;
-            }
-            List<String> sargs = Arrays.asList(args);
-            cmd.invoke(issuer, sargs, commandOperationContext);
-        } else {
+    private void executeCommand(CommandOperationContext commandOperationContext, CommandIssuer issuer, String[] args, RegisteredCommand cmd) {
+        if (!cmd.hasPermission(issuer)) {
             issuer.sendError(MessageConfig.IMP.ERROR.NO_PERMISSION);
+            return;
         }
-    }
 
-    /**
-     * Please use command conditions for restricting execution
-     *
-     * @param issuer
-     * @param cmd
-     * @return
-     * @deprecated See {@link CommandConditions}
-     */
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
-    public boolean canExecute(CommandIssuer issuer, RegisteredCommand<?> cmd) {
-        return true;
+        commandOperationContext.setRegisteredCommand(cmd);
+        if (checkPrecommand(commandOperationContext, cmd, issuer, args)) {
+            return;
+        }
+
+        cmd.invoke(issuer, Arrays.asList(args), commandOperationContext);
     }
 
     /**
@@ -621,7 +606,7 @@ public abstract class BaseCommand {
     @SuppressWarnings("WeakerAccess")
     public List<String> tabComplete(CommandIssuer issuer, String commandLabel, String[] args, boolean isAsync)
             throws IllegalArgumentException {
-        return tabComplete(issuer, manager.getRootCommand(commandLabel.toLowerCase(Locale.ENGLISH)), args, isAsync);
+        return tabComplete(issuer, manager.getRootCommand(commandLabel.toLowerCase()), args, isAsync);
     }
 
     List<String> tabComplete(CommandIssuer issuer, RootCommand rootCommand, String[] args, boolean isAsync)
@@ -629,6 +614,7 @@ public abstract class BaseCommand {
         if (args.length == 0) {
             args = new String[]{""};
         }
+
         String commandLabel = rootCommand.getCommandName();
         try {
             CommandRouter router = manager.getRouter();
@@ -660,24 +646,21 @@ public abstract class BaseCommand {
     List<String> getCommandsForCompletion(CommandIssuer issuer, String[] args) {
         final Set<String> cmds = new HashSet<>();
         final int cmdIndex = Math.max(0, args.length - 1);
-        String argString = ApacheCommonsLangUtil.join(args, " ").toLowerCase(Locale.ENGLISH);
+        String argString = ApacheCommonsLangUtil.join(args, " ").toLowerCase();
+
         for (Map.Entry<String, RegisteredCommand> entry : subCommands.entries()) {
             final String key = entry.getKey();
-            if (key.startsWith(argString) && !isSpecialSubcommand(key)) {
-                final RegisteredCommand value = entry.getValue();
-                if (!value.hasPermission(issuer) || value.isPrivate) {
-                    continue;
-                }
+            if (!key.startsWith(argString) || isSpecialSubcommand(key)) continue;
 
-                String[] split = ACFPatterns.SPACE.split(value.prefSubCommand);
-                cmds.add(split[cmdIndex]);
+            final RegisteredCommand value = entry.getValue();
+            if (!value.hasPermission(issuer) || value.isPrivate) {
+                continue;
             }
+
+            String[] split = ACFPatterns.SPACE.split(value.prefSubCommand);
+            cmds.add(split[cmdIndex]);
         }
         return new ArrayList<>(cmds);
-    }
-
-    static boolean isSpecialSubcommand(String key) {
-        return CATCHUNKNOWN.equals(key) || DEFAULT.equals(key);
     }
 
     /**
@@ -701,21 +684,6 @@ public abstract class BaseCommand {
 
         List<String> cmds = manager.getCommandCompletions().of(cmd, issuer, args, isAsync);
         return filterTabComplete(args[args.length - 1], cmds);
-    }
-
-    /**
-     * Gets the actual args in string form the user typed
-     * This returns a list of all tab complete options which are possible with the given argument and commands.
-     *
-     * @param arg  Argument which was pressed tab on.
-     * @param cmds The possibilities to return.
-     * @return All possible options. This may be empty.
-     */
-    private static List<String> filterTabComplete(String arg, List<String> cmds) {
-        return cmds.stream()
-                .distinct()
-                .filter(cmd -> cmd != null && (arg.isEmpty() || ApacheCommonsLangUtil.startsWithIgnoreCase(cmd, arg)))
-                .collect(Collectors.toList());
     }
 
     /**

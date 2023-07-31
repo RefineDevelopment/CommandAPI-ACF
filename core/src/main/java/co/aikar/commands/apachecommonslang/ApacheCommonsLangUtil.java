@@ -160,7 +160,7 @@ public class ApacheCommonsLangUtil {
         if (str == null || str.isEmpty() || delimLen == 0) {
             return str;
         }
-        str = str.toLowerCase(Locale.ENGLISH);
+        str = str.toLowerCase();
         return capitalize(str, delimiters);
     }
 

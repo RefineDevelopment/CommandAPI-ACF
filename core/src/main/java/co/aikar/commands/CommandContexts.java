@@ -292,17 +292,6 @@ public class CommandContexts<R extends CommandExecutionContext<?, ? extends Comm
         }
     }
 
-
-    /**
-     * @see #registerIssuerAwareContext(Class, IssuerAwareContextResolver)
-     * @deprecated Please switch to {@link #registerIssuerAwareContext(Class, IssuerAwareContextResolver)}
-     * as the core wants to use the platform-agnostic term of "Issuer" instead of Sender
-     */
-    @Deprecated
-    public <T> void registerSenderAwareContext(Class<T> context, IssuerAwareContextResolver<T, R> supplier) {
-        contextMap.put(context, supplier);
-    }
-
     /**
      * Registers a context resolver that may conditionally consume input, falling back to using the context of the
      * issuer to potentially fulfill this context.

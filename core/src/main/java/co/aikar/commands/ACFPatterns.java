@@ -36,9 +36,7 @@ final class ACFPatterns {
     public static final Pattern PERCENTAGE = Pattern.compile("%", Pattern.LITERAL);
     public static final Pattern NEWLINE = Pattern.compile("\n");
     public static final Pattern DASH = Pattern.compile("-");
-    public static final Pattern UNDERSCORE = Pattern.compile("_");
     public static final Pattern SPACE = Pattern.compile(" ");
-    public static final Pattern SEMICOLON = Pattern.compile(";");
     public static final Pattern COLON = Pattern.compile(":");
     public static final Pattern COLONEQUALS = Pattern.compile("([:=])");
     public static final Pattern PIPE = Pattern.compile("\\|");
@@ -48,7 +46,6 @@ final class ACFPatterns {
     public static final Pattern NON_PRINTABLE_CHARACTERS = Pattern.compile("[^\\x20-\\x7F]");
     public static final Pattern EQUALS = Pattern.compile("=");
     public static final Pattern FORMATTER = Pattern.compile("<c(?<color>\\d+)>(?<msg>.*?)</c\\1>", Pattern.CASE_INSENSITIVE);
-    public static final Pattern I18N_STRING = Pattern.compile("\\{@@(?<key>.+?)}", Pattern.CASE_INSENSITIVE);
     public static final Pattern REPLACEMENT_PATTERN = Pattern.compile("%\\{.[^\\s]*}");
 
 

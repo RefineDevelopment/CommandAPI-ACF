@@ -184,10 +184,10 @@ public class BukkitCommandManager extends CommandManager<
     }
 
     public void registerCommand(BaseCommand command, boolean force) {
-        final String plugin = this.plugin.getName().toLowerCase(Locale.ENGLISH);
+        final String plugin = this.plugin.getName().toLowerCase();
         command.onRegister(this);
         for (Map.Entry<String, RootCommand> entry : command.registeredCommands.entrySet()) {
-            String commandName = entry.getKey().toLowerCase(Locale.ENGLISH);
+            String commandName = entry.getKey().toLowerCase();
             BukkitRootCommand bukkitCommand = (BukkitRootCommand) entry.getValue();
             if (!bukkitCommand.isRegistered) {
                 Command oldCommand = commandMap.getCommand(commandName);
@@ -238,7 +238,7 @@ public class BukkitCommandManager extends CommandManager<
      */
     @Deprecated
     public void unregisterCommand(BukkitRootCommand command) {
-        final String plugin = this.plugin.getName().toLowerCase(Locale.ENGLISH);
+        final String plugin = this.plugin.getName().toLowerCase();
         command.unregister(commandMap);
         String key = command.getName();
         Command registered = knownCommands.get(key);

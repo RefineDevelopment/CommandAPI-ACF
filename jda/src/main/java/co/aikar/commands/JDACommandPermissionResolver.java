@@ -12,7 +12,7 @@ public class JDACommandPermissionResolver implements CommandPermissionResolver {
     public JDACommandPermissionResolver() {
         discordPermissionOffsets = new HashMap<>();
         for (Permission permission : Permission.values()) {
-            discordPermissionOffsets.put(permission.name().toLowerCase(Locale.ENGLISH).replaceAll("_", "-"), permission.getOffset());
+            discordPermissionOffsets.put(permission.name().toLowerCase().replaceAll("_", "-"), permission.getOffset());
         }
     }
 

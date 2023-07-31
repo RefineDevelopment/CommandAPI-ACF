@@ -53,6 +53,7 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
             return super.size() == 0 ? null : super.peek();
         }
     });
+
     protected final CommandReplacements replacements = new CommandReplacements(this);
     protected final CommandConditions<I, CEC, CC> conditions = new CommandConditions<>(this);
     protected Map<String, RootCommand> rootCommands = new HashMap<>();
@@ -60,6 +61,7 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
     protected Table<Class<?>, String, Object> dependencies = new Table<>();
     protected CommandHelpFormatter helpFormatter = new CommandHelpFormatter(this);
     protected int defaultHelpPerPage = 10;
+
     boolean logUnhandledExceptions = true;
     private Set<String> unstableAPIs = new HashSet<>();
 
@@ -257,11 +259,11 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
     }
 
     public synchronized RootCommand getRootCommand(@NotNull String cmd) {
-        return rootCommands.get(ACFPatterns.SPACE.split(cmd.toLowerCase(Locale.ENGLISH), 2)[0]);
+        return rootCommands.get(ACFPatterns.SPACE.split(cmd.toLowerCase(), 2)[0]);
     }
 
     public synchronized RootCommand obtainRootCommand(@NotNull String cmd) {
-        return rootCommands.computeIfAbsent(ACFPatterns.SPACE.split(cmd.toLowerCase(Locale.ENGLISH), 2)[0], this::createRootCommand);
+        return rootCommands.computeIfAbsent(ACFPatterns.SPACE.split(cmd.toLowerCase(), 2)[0], this::createRootCommand);
     }
 
     public abstract Collection<RootCommand> getRegisteredRootCommands();
@@ -384,7 +386,7 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
      * @param baseCommand the instance which fields should be filled
      */
     void injectDependencies(BaseCommand baseCommand) {
-        Class clazz = baseCommand.getClass();
+        Class<?> clazz = baseCommand.getClass();
         do {
             for (Field field : clazz.getDeclaredFields()) {
                 if (annotations.hasAnnotation(field, Dependency.class)) {

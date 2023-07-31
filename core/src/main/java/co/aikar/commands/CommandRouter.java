@@ -53,14 +53,14 @@ class CommandRouter {
                 Optional<RegisteredCommand> optCmd = cmds.stream()
                         .filter(c -> isProbableMatch(c, args, completion))
                         .min((c1, c2) -> {
-                    int a = c1.consumeInputResolvers;
-                    int b = c2.consumeInputResolvers;
+                            int a = c1.consumeInputResolvers;
+                            int b = c2.consumeInputResolvers;
 
-                    if (a == b) {
-                        return 0;
-                    }
-                    return a < b ? 1 : -1;
-                });
+                            if (a == b) {
+                                return 0;
+                            }
+                            return a < b ? 1 : -1;
+                        });
                 if (optCmd.isPresent()) {
                     return new CommandRouteResult(optCmd.get(), search);
                 }
@@ -86,7 +86,7 @@ class CommandRouter {
         SetMultimap<String, RegisteredCommand> subCommands = command.getSubCommands();
         int argLength = args.length;
         for (int i = argLength; i >= 0; i--) {
-            String subcommand = ApacheCommonsLangUtil.join(args, " ", 0, i).toLowerCase(Locale.ENGLISH);
+            String subcommand = ApacheCommonsLangUtil.join(args, " ", 0, i).toLowerCase();
             Set<RegisteredCommand> cmds = subCommands.get(subcommand);
 
             if (!cmds.isEmpty()) {
@@ -152,7 +152,7 @@ class CommandRouter {
         RouteSearch(Set<RegisteredCommand> commands, String[] args, String commandLabel, String subcommand, boolean completion) {
             this.commands = commands;
             this.args = args;
-            this.commandLabel = commandLabel.toLowerCase(Locale.ENGLISH);
+            this.commandLabel = commandLabel.toLowerCase();
             this.subcommand = subcommand;
         }
     }

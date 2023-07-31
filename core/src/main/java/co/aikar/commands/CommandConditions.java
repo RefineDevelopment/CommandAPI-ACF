@@ -45,12 +45,12 @@ public class CommandConditions<
     }
 
     public Condition<I> addCondition(@NotNull String id, @NotNull Condition<I> handler) {
-        return this.conditions.put(id.toLowerCase(Locale.ENGLISH), handler);
+        return this.conditions.put(id.toLowerCase(), handler);
     }
 
     public <P> ParameterCondition addCondition(Class<P> clazz, @NotNull String id,
                                                @NotNull ParameterCondition<P, CEC, I> handler) {
-        return this.paramConditions.put(clazz, id.toLowerCase(Locale.ENGLISH), handler);
+        return this.paramConditions.put(clazz, id.toLowerCase(), handler);
     }
 
     void validateConditions(CommandOperationContext context) throws InvalidCommandArgument {
@@ -77,7 +77,7 @@ public class CommandConditions<
         CommandIssuer issuer = context.getCommandIssuer();
         for (String cond : ACFPatterns.PIPE.split(conditions)) {
             String[] split = ACFPatterns.COLON.split(cond, 2);
-            String id = split[0].toLowerCase(Locale.ENGLISH);
+            String id = split[0].toLowerCase();
             Condition<I> condition = this.conditions.get(id);
             if (condition == null) {
                 RegisteredCommand cmd = context.getRegisteredCommand();
@@ -103,7 +103,7 @@ public class CommandConditions<
             String[] split = ACFPatterns.COLON.split(cond, 2);
             ParameterCondition condition;
             Class<?> cls = execContext.getParam().getType();
-            String id = split[0].toLowerCase(Locale.ENGLISH);
+            String id = split[0].toLowerCase();
             do {
                 condition = this.paramConditions.get(cls, id);
                 if (condition == null && cls.getSuperclass() != null && cls.getSuperclass() != Object.class) {

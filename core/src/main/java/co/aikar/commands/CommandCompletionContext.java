@@ -45,7 +45,7 @@ public class CommandCompletionContext<I extends CommandIssuer> {
             String[] configs = ACFPatterns.COMMA.split(config);
             for (String conf : configs) {
                 String[] confsplit = ACFPatterns.EQUALS.split(conf, 2);
-                this.configs.put(confsplit[0].toLowerCase(Locale.ENGLISH), confsplit.length > 1 ? confsplit[1] : null);
+                this.configs.put(confsplit[0].toLowerCase(), confsplit.length > 1 ? confsplit[1] : null);
             }
             this.config = configs[0];
         } else {
@@ -64,11 +64,11 @@ public class CommandCompletionContext<I extends CommandIssuer> {
     }
 
     public String getConfig(String key, String def) {
-        return this.configs.getOrDefault(key.toLowerCase(Locale.ENGLISH), def);
+        return this.configs.getOrDefault(key.toLowerCase(), def);
     }
 
     public boolean hasConfig(String key) {
-        return this.configs.containsKey(key.toLowerCase(Locale.ENGLISH));
+        return this.configs.containsKey(key.toLowerCase());
     }
 
     public <T> T getContextValue(Class<? extends T> clazz) throws InvalidCommandArgument {
