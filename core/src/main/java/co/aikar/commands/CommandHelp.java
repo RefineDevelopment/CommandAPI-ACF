@@ -25,11 +25,12 @@ package co.aikar.commands;
 
 import co.aikar.commands.config.impl.MessageConfig;
 import com.google.common.collect.SetMultimap;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -37,17 +38,17 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class CommandHelp {
-    private final CommandManager manager;
-    private final CommandIssuer issuer;
-    private final List<HelpEntry> helpEntries = new ArrayList<>();
-    private final String commandName;
-    final String commandPrefix;
-    private int page = 1;
-    private int perPage;
-    List<String> search;
-    private int totalResults;
-    private int totalPages;
-    private boolean lastPage;
+    @Getter public final String commandPrefix;
+    @Getter private final CommandManager manager;
+    @Getter private final CommandIssuer issuer;
+    @Getter private final List<HelpEntry> helpEntries = new ArrayList<>();
+    @Getter private final String commandName;
+    @Getter public List<String> search;
+    @Setter @Getter private int page = 1;
+    @Getter @Setter private int perPage;
+    @Getter private int totalResults;
+    @Getter private int totalPages;
+    @Getter private boolean lastPage;
 
     public CommandHelp(CommandManager manager, RootCommand rootCommand, CommandIssuer issuer) {
         this.manager = manager;
@@ -117,10 +118,6 @@ public class CommandHelp {
         help.setSearchScore(searchScore);
     }
 
-    public CommandManager getManager() {
-        return manager;
-    }
-
     public boolean testExactMatch(String command) {
         for (HelpEntry helpEntry : helpEntries) {
             if (helpEntry.getCommand().endsWith(" " + command)) {
@@ -140,36 +137,38 @@ public class CommandHelp {
         this.helpEntries.sort(Comparator.comparing(HelpEntry::getCommand));
 
         List<HelpEntry> helpEntries = getHelpEntries().stream().filter(HelpEntry::shouldShow).collect(Collectors.toList());
-        Iterator<HelpEntry> results = helpEntries.stream().sorted(Comparator.comparingInt(helpEntry -> helpEntry.getSearchScore() * -1)).iterator();
+        List<HelpEntry> results = helpEntries.stream().sorted(Comparator.comparingInt(helpEntry -> helpEntry.getSearchScore() * -1)).collect(Collectors.toList());
 
-        if (!results.hasNext()) {
+        if (results.isEmpty()) {
             issuer.sendError(MessageConfig.IMP.HELP.NO_COMMANDS_MATCHED_SEARCH.replace("<search>", ACFUtil.join(this.search, " ")));
             helpEntries = getHelpEntries();
-            results = helpEntries.iterator();
+            results = helpEntries;
         }
 
         this.totalResults = helpEntries.size();
         int min = (this.page - 1) * this.perPage; // TODO: per page configurable?
-        int max = min + this.perPage;
-        this.totalPages = (int) Math.ceil((float) totalResults / (float) this.perPage);
-        int i = 0;
 
         if (min >= totalResults) {
             issuer.sendInfo(MessageConfig.IMP.HELP.NO_RESULTS);
             return;
         }
 
+        int max = min + this.perPage;
+        this.totalPages = (int) Math.ceil((float) totalResults / (float) this.perPage);
+        int i = 0;
+
         List<HelpEntry> printEntries = new ArrayList<>();
-        while (results.hasNext()) {
-            HelpEntry e = results.next();
+
+        for (HelpEntry result : results) {
             if (i >= max) {
                 break;
             }
             if (i++ < min) {
                 continue;
             }
-            printEntries.add(e);
+            printEntries.add(result);
         }
+
         this.lastPage = max >= totalResults;
 
         if (search == null) {
@@ -177,19 +176,6 @@ public class CommandHelp {
         } else {
             formatter.showSearchResults(this, printEntries);
         }
-
-    }
-
-    public List<HelpEntry> getHelpEntries() {
-        return helpEntries;
-    }
-
-    public void setPerPage(int perPage) {
-        this.perPage = perPage;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
     }
 
     public void setPage(int page, int perPage) {
@@ -202,43 +188,7 @@ public class CommandHelp {
         getHelpEntries().forEach(this::updateSearchScore);
     }
 
-    public CommandIssuer getIssuer() {
-        return issuer;
-    }
-
-    public String getCommandName() {
-        return commandName;
-    }
-
-    public String getCommandPrefix() {
-        return commandPrefix;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public int getPerPage() {
-        return perPage;
-    }
-
-    public List<String> getSearch() {
-        return search;
-    }
-
-    public int getTotalResults() {
-        return totalResults;
-    }
-
-    public int getTotalPages() {
-        return totalPages;
-    }
-
     public boolean isOnlyPage() {
         return this.page == 1 && lastPage;
-    }
-
-    public boolean isLastPage() {
-        return lastPage;
     }
 }
