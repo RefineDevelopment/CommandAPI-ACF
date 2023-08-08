@@ -150,6 +150,8 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
 
             if (isAsync) {
                 CompletableFuture.supplyAsync(() -> resolveContexts(sender, args)).whenCompleteAsync(((passedArgs, exception) -> {
+                    if (passedArgs == null) return;
+
                     if (exception != null) {
                         handleException(sender, args, exception);
                         return;
