@@ -218,7 +218,7 @@ public class BukkitCommandManager extends CommandManager<
 
     @Override
     public void registerCommand(BaseCommand command) {
-        registerCommand(command, false);
+        registerCommand(command, true);
     }
 
     public void unregisterCommand(BaseCommand command) {
