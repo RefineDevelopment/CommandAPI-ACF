@@ -107,7 +107,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
         this.parameters = new CommandParameter[parameters.length];
 
         this.isPrivate = annotations.hasAnnotation(method, Private.class) || annotations.getAnnotationFromClass(scope.getClass(), Private.class) != null;
-        this.isAsync = annotations.hasAnnotation(method, Async.class) || annotations.hasAnnotation(scope.getClass(), Private.class);
+        this.isAsync = annotations.hasAnnotation(method, Async.class) || annotations.hasAnnotation(scope.getClass(), Async.class);
 
         int requiredResolvers = 0;
         int consumeInputResolvers = 0;
