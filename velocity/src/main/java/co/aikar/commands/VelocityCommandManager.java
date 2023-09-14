@@ -60,6 +60,21 @@ public class VelocityCommandManager extends CommandManager<CommandSource, Veloci
         registerDependency(ProxyServer.class, proxy);
     }
 
+    public VelocityCommandManager(ProxyServer proxy, Object plugin, VelocityCommandManager copyFrom) {
+        super(copyFrom);
+        this.contexts = copyFrom.contexts;
+        this.completions = copyFrom.completions;
+
+        this.proxy = proxy;
+        this.plugin = proxy.getPluginManager().getPlugin(plugin.getClass().getAnnotation(Plugin.class).id()).get();
+
+        new MessageConfig().createConfig(this.plugin.getDescription().getName().get());
+
+        registerDependency(plugin.getClass(), plugin);
+        registerDependency(Plugin.class, plugin);
+        registerDependency(ProxyServer.class, proxy);
+    }
+
     public ProxyServer getProxy() {
         return this.proxy;
     }
