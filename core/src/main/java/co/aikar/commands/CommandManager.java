@@ -44,18 +44,31 @@ import java.util.Stack;
 @SuppressWarnings("WeakerAccess")
 public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends CommandExecutionContext<CEC, I>, CC extends ConditionContext<I>> {
 
+    protected CommandManager() {}
+
+    protected CommandManager(CommandManager<IT, I, CEC, CC> copyFrom) {
+        this.replacements = copyFrom.replacements;
+        this.conditions = copyFrom.conditions;
+        this.defaultExceptionHandler = copyFrom.defaultExceptionHandler;
+        this.helpFormatter = copyFrom.helpFormatter;
+        this.defaultHelpPerPage = copyFrom.defaultHelpPerPage;
+        this.logUnhandledExceptions = copyFrom.logUnhandledExceptions;
+        this.unstableAPIs = copyFrom.unstableAPIs;
+        this.annotations = copyFrom.annotations;
+    }
+
     /**
      * This is a stack incase a command calls a command
      */
     static ThreadLocal<Stack<CommandOperationContext>> commandOperationContext = ThreadLocal.withInitial(() -> new Stack<CommandOperationContext>() {
         @Override
         public synchronized CommandOperationContext peek() {
-            return super.size() == 0 ? null : super.peek();
+            return super.isEmpty() ? null : super.peek();
         }
     });
 
-    protected final CommandReplacements replacements = new CommandReplacements(this);
-    protected final CommandConditions<I, CEC, CC> conditions = new CommandConditions<>(this);
+    protected CommandReplacements replacements = new CommandReplacements(this);
+    protected CommandConditions<I, CEC, CC> conditions = new CommandConditions<>(this);
     protected Map<String, RootCommand> rootCommands = new HashMap<>();
     protected ExceptionHandler defaultExceptionHandler = null;
     protected Table<Class<?>, String, Object> dependencies = new Table<>();

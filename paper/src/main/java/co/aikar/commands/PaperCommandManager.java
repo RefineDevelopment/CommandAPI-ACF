@@ -47,6 +47,22 @@ public class PaperCommandManager extends BukkitCommandManager {
         }
     }
 
+    public PaperCommandManager(Plugin plugin, PaperCommandManager copyFrom) {
+        super(plugin, copyFrom);
+        try {
+            Class.forName("com.destroystokyo.paper.event.server.AsyncTabCompleteEvent");
+            plugin.getServer().getPluginManager().registerEvents(new PaperAsyncTabCompleteHandler(this), plugin);
+        } catch (ClassNotFoundException ignored) {
+            // Ignored
+        }
+        try {
+            Class.forName("com.destroystokyo.paper.event.brigadier.CommandRegisteredEvent");
+            brigadierAvailable = true;
+        } catch (ClassNotFoundException ignored) {
+            // Ignored
+        }
+    }
+
     @Override
     public void enableUnstableAPI(String api) {
         super.enableUnstableAPI(api);

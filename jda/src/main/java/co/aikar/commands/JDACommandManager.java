@@ -76,6 +76,47 @@ public class JDACommandManager extends CommandManager<
         });
     }
 
+    public JDACommandManager(JDA jda, JDAOptions options, JDACommandManager copyFrom) {
+        super(copyFrom);
+        this.contexts = copyFrom.contexts;
+        this.completions = copyFrom.completions;
+
+        if (options == null) {
+            options = new JDAOptions();
+        }
+        this.jda = jda;
+        this.permissionResolver = options.permissionResolver;
+        jda.addEventListener(new JDAListener(this));
+        this.defaultConfig = options.defaultConfig == null ? new JDACommandConfig() : options.defaultConfig;
+        this.configProvider = options.configProvider;
+        this.completions = new JDACommandCompletions(this);
+        this.logger = Logger.getLogger(this.getClass().getSimpleName());
+
+        getCommandConditions().addCondition("owneronly", context -> {
+            if (context.getIssuer().getEvent().getAuthor().getIdLong() != getBotOwnerId()) {
+                throw new ConditionFailedException("Only the bot owner can use this command."); // TODO: MessageKey
+            }
+        });
+
+        getCommandConditions().addCondition("guildonly", context -> {
+            if (context.getIssuer().getEvent().getChannelType() != ChannelType.TEXT) {
+                throw new ConditionFailedException("This command must be used in guild chat."); // TODO: MessageKey
+            }
+        });
+
+        getCommandConditions().addCondition("privateonly", context -> {
+            if (context.getIssuer().getEvent().getChannelType() != ChannelType.PRIVATE) {
+                throw new ConditionFailedException("This command must be used in private chat."); // TODO: MessageKey
+            }
+        });
+
+        getCommandConditions().addCondition("grouponly", context -> {
+            if (context.getIssuer().getEvent().getChannelType() != ChannelType.GROUP) {
+                throw new ConditionFailedException("This command must be used in group chat."); // TODO: MessageKey
+            }
+        });
+    }
+
     public static JDAOptions options() {
         return new JDAOptions();
     }

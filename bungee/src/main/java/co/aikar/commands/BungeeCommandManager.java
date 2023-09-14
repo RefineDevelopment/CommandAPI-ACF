@@ -68,6 +68,23 @@ public class BungeeCommandManager extends CommandManager<
         registerDependency(PluginDescription.class, plugin.getDescription());
     }
 
+    public BungeeCommandManager(Plugin plugin, BungeeCommandManager copyFrom) {
+        super(copyFrom);
+        this.contexts = copyFrom.contexts;
+        this.completions = copyFrom.completions;
+
+        this.plugin = plugin;
+
+        new MessageConfig().createConfig(plugin.getDescription().getName());
+
+        plugin.getProxy().getPluginManager().registerListener(plugin, new ACFBungeeListener(this, plugin));
+
+        // TODO more default dependencies for bungee
+        registerDependency(plugin.getClass(), plugin);
+        registerDependency(Plugin.class, plugin);
+        registerDependency(PluginDescription.class, plugin.getDescription());
+    }
+
     public Plugin getPlugin() {
         return this.plugin;
     }

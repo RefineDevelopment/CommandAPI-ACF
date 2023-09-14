@@ -125,6 +125,52 @@ public class BukkitCommandManager extends CommandManager<
         registerDependency(PluginDescriptionFile.class, plugin.getDescription());
     }
 
+    public BukkitCommandManager(Plugin plugin, BukkitCommandManager copyFrom) {
+        super(copyFrom);
+        this.contexts = copyFrom.contexts;
+        this.completions = copyFrom.completions;
+
+        this.plugin = plugin;
+
+        new MessageConfig().createConfig(plugin.getDescription().getName());
+
+        String prefix = this.plugin.getDescription().getPrefix();
+        this.logger = Logger.getLogger(prefix != null ? prefix : this.plugin.getName());
+        this.commandMap = hookCommandMap();
+        Pattern versionPattern = Pattern.compile("\\(MC: (\\d)\\.(\\d+)\\.?(\\d+?)?\\)");
+        Matcher matcher = versionPattern.matcher(Bukkit.getVersion());
+        if (matcher.find()) {
+            this.mcMinorVersion = ACFUtil.parseInt(matcher.toMatchResult().group(2), 0);
+            this.mcPatchVersion = ACFUtil.parseInt(matcher.toMatchResult().group(3), 0);
+        } else {
+            this.mcMinorVersion = -1;
+            this.mcPatchVersion = -1;
+        }
+
+        Bukkit.getHelpMap().registerHelpTopicFactory(BukkitRootCommand.class, command -> {
+            if (hasUnstableAPI("help")) {
+                return new ACFBukkitHelpTopic(this, (BukkitRootCommand) command);
+            } else {
+                return new GenericCommandHelpTopic(command);
+            }
+        });
+
+        Bukkit.getPluginManager().registerEvents(new ACFBukkitListener(this, plugin), plugin);
+
+        registerDependency(plugin.getClass(), plugin);
+        registerDependency(Logger.class, plugin.getLogger());
+        registerDependency(FileConfiguration.class, plugin.getConfig());
+        registerDependency(FileConfiguration.class, "config", plugin.getConfig());
+        registerDependency(Plugin.class, plugin);
+        registerDependency(JavaPlugin.class, plugin);
+        registerDependency(PluginManager.class, Bukkit.getPluginManager());
+        registerDependency(Server.class, Bukkit.getServer());
+        registerDependency(BukkitScheduler.class, Bukkit.getScheduler());
+        registerDependency(ScoreboardManager.class, Bukkit.getScoreboardManager());
+        registerDependency(ItemFactory.class, Bukkit.getItemFactory());
+        registerDependency(PluginDescriptionFile.class, plugin.getDescription());
+    }
+
     @NotNull
     private CommandMap hookCommandMap() {
         CommandMap commandMap = null;
