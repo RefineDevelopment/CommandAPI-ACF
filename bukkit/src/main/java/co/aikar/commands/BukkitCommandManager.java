@@ -166,6 +166,8 @@ public class BukkitCommandManager extends CommandManager<
         registerDependency(ScoreboardManager.class, Bukkit.getScoreboardManager());
         registerDependency(ItemFactory.class, Bukkit.getItemFactory());
         registerDependency(PluginDescriptionFile.class, plugin.getDescription());
+
+        CC.checkHexColors();
     }
 
     @NotNull
