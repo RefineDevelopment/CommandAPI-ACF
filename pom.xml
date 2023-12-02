@@ -25,7 +25,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>co.aikar</groupId>
     <artifactId>acf-parent</artifactId>
-    <version><!--VERSION-->0.5.1-SNAPSHOT<!--VERSION--></version>
+    <version>0.5.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>ACF (All)</name>
     <url>https://acf.emc.gs</url>
@@ -203,7 +203,6 @@
         <module>bukkit</module>
         <module>paper</module>
         <module>bungee</module>
-        <module>jda</module>
         <module>velocity</module>
     </modules>
 </project>

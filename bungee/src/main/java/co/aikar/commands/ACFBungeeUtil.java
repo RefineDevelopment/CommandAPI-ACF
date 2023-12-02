@@ -36,10 +36,6 @@ import java.util.stream.Collectors;
 
 public class ACFBungeeUtil {
 
-    public static String color(String message) {
-        return ChatColor.translateAlternateColorCodes('&', message);
-    }
-
     /**
      * Move to Message Keys on the CommandIssuer
      *
@@ -47,14 +43,14 @@ public class ACFBungeeUtil {
      */
     @Deprecated
     public static void sendMsg(CommandSender player, String message) {
-        message = color(message);
+        message = CC.translate(message);
         for (String msg : ACFPatterns.NEWLINE.split(message)) {
             player.sendMessage(msg);
         }
     }
 
     public static String removeColors(String msg) {
-        return ChatColor.stripColor(color(msg));
+        return ChatColor.stripColor(CC.translate(msg));
     }
 
     public static String replaceChatString(String message, String replace, String with) {

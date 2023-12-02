@@ -73,7 +73,7 @@ public class BungeeCommandIssuer implements CommandIssuer {
 
     @Override
     public void sendClickable(String message, String hover, String command, String suggest) {
-        new Clickable(ACFBungeeUtil.color(message), ACFBungeeUtil.color(hover), command, suggest).sendToPlayer(sender);
+        new Clickable(CC.translate(message), CC.translate(hover), command, suggest).sendToPlayer(sender);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class BungeeCommandIssuer implements CommandIssuer {
         Clickable clickable = new Clickable();
 
         for (ClickablePart clickablePart : clickableParts) {
-            clickable.add(ACFBungeeUtil.color(clickablePart.getMessage()), ACFBungeeUtil.color(clickablePart.getHover()), clickablePart.getCommand(), clickablePart.getSuggest());
+            clickable.add(CC.translate(clickablePart.getMessage()), CC.translate(clickablePart.getHover()), clickablePart.getCommand(), clickablePart.getSuggest());
         }
 
         clickable.sendToPlayer(sender);
@@ -89,7 +89,7 @@ public class BungeeCommandIssuer implements CommandIssuer {
 
     @Override
     public void sendMessageInternal(String message) {
-        sender.sendMessage(ACFBungeeUtil.color(message));
+        sender.sendMessage(CC.translate(message));
     }
 
     @Override

@@ -72,7 +72,7 @@ public class BukkitCommandIssuer implements CommandIssuer {
 
     @Override
     public void sendClickable(String message, String hover, String command, String suggest) {
-        new Clickable(ACFBukkitUtil.color(message), ACFBukkitUtil.color(hover), command, suggest).sendToPlayer(sender);
+        new Clickable(CC.translate(message), CC.translate(hover), command, suggest).sendToPlayer(sender);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class BukkitCommandIssuer implements CommandIssuer {
         Clickable clickable = new Clickable();
 
         for (ClickablePart clickablePart : clickableParts) {
-            clickable.add(ACFBukkitUtil.color(clickablePart.getMessage()), ACFBukkitUtil.color(clickablePart.getHover()), clickablePart.getCommand(), clickablePart.getSuggest());
+            clickable.add(CC.translate(clickablePart.getMessage()), CC.translate(clickablePart.getHover()), clickablePart.getCommand(), clickablePart.getSuggest());
         }
 
         clickable.sendToPlayer(sender);
@@ -88,7 +88,7 @@ public class BukkitCommandIssuer implements CommandIssuer {
 
     @Override
     public void sendMessageInternal(String message) {
-        sender.sendMessage(ACFBukkitUtil.color(message));
+        sender.sendMessage(CC.translate(message));
     }
 
     @Override

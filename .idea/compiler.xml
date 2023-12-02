@@ -7,7 +7,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="acf-jda" />
         <module name="acf-paper" />
         <module name="example-plugin" />
         <module name="acf" />
@@ -22,6 +21,7 @@
     <bytecodeTargetLevel>
       <module name="acf" target="1.8" />
       <module name="acf-example" target="1.8" />
+      <module name="acf-jda" target="1.8" />
       <module name="acf-sponge" target="1.8" />
       <module name="CommandAPI-ACF" target="1.8" />
       <module name="commands" target="1.8" />

@@ -30,12 +30,12 @@
     <parent>
         <groupId>co.aikar</groupId>
         <artifactId>acf-parent</artifactId>
-        <version><!--VERSION-->0.5.1-SNAPSHOT<!--VERSION--></version>
+        <version>0.5.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>acf-bukkit</artifactId>
-    <version><!--VERSION-->0.5.1-SNAPSHOT<!--VERSION--></version>
+    <version>0.5.1-SNAPSHOT</version>
 
     <name>ACF (Bukkit)</name>
 
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>co.aikar</groupId>
             <artifactId>acf-core</artifactId>
-            <version><!--VERSION-->0.5.1-SNAPSHOT<!--VERSION--></version>
+            <version>0.5.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -58,6 +58,13 @@
             <version>1.12-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-chat</artifactId>
+            <version>1.20-R0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
     <build>
         <resources>
