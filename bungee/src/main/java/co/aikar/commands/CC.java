@@ -20,6 +20,8 @@ public class CC {
     }
 
     public static String translate(String input) {
+        input = input.replace("{0}", "\n");
+
         try {
             return ChatColor.translateAlternateColorCodes('&', getHexColor(input));
         } catch (Exception ignored) {
