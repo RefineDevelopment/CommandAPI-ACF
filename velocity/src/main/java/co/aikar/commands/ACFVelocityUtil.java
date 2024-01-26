@@ -18,6 +18,7 @@ public class ACFVelocityUtil {
     public static LegacyComponentSerializer serializer = LegacyComponentSerializer.builder().character('&').hexColors().build();
 
     public static TextComponent color(String message) {
+        message = message.replace("{0}", "\n");
         return serializer.deserialize(message);
     }
 
