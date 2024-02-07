@@ -88,7 +88,7 @@ public class CommandCompletions<C extends CommandCompletionContext> {
      * @param clazz
      * @return
      */
-    public void registerCompletion(String id, CommandCompletionHandler<C> handler, Class<?> clazz) {
+    public void registerCompletion(String id, Class<?> clazz, CommandCompletionHandler<C> handler) {
         this.completionMap.put(prepareCompletionId(id), handler);
         setDefaultCompletion(id, clazz);
     }
