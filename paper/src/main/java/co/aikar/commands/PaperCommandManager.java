@@ -63,11 +63,8 @@ public class PaperCommandManager extends BukkitCommandManager {
         }
     }
 
-    @Override
-    public void enableUnstableAPI(String api) {
-        super.enableUnstableAPI(api);
-
-        if ("brigadier".equals(api) && brigadierAvailable) {
+    public void enableBrigadier() {
+        if (brigadierAvailable) {
             new PaperBrigadierManager(plugin, this);
         }
     }

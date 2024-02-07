@@ -42,6 +42,7 @@ import java.util.stream.Stream;
 
 @SuppressWarnings("WeakerAccess")
 public class BukkitCommandCompletions extends CommandCompletions<BukkitCommandCompletionContext> {
+
     public BukkitCommandCompletions(BukkitCommandManager manager) {
         super(manager);
         registerAsyncCompletion("mobs", c -> {
@@ -88,7 +89,7 @@ public class BukkitCommandCompletions extends CommandCompletions<BukkitCommandCo
             return matchedPlayers;
         });
 
-        setDefaultCompletion("players", OnlinePlayer.class, co.aikar.commands.contexts.OnlinePlayer.class, Player.class);
+        setDefaultCompletion("players", OnlinePlayer.class, OnlinePlayer.class, Player.class);
         setDefaultCompletion("worlds", World.class);
     }
 

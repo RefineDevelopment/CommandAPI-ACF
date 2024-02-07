@@ -142,7 +142,6 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extend
         this.computePermissions();
     }
 
-
     void invoke(CommandIssuer sender, List<String> args, CommandOperationContext context) {
         preCommand();
         try {

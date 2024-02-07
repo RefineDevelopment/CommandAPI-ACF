@@ -198,7 +198,6 @@ public class CommandExecutionContext<CEC extends CommandExecutionContext, I exte
         return this.cmd;
     }
 
-    @UnstableAPI
     CommandParameter getCommandParameter() {
         return this.param;
     }

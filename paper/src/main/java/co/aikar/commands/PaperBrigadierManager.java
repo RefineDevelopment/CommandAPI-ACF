@@ -34,17 +34,13 @@ import org.bukkit.plugin.Plugin;
  * Handles registering of commands into brigadier
  *
  * @author MiniDigger
- * @deprecated Unstable API
  */
-@Deprecated
-@UnstableAPI
 public class PaperBrigadierManager implements Listener {
 
     private final PaperCommandManager manager;
     private final ACFBrigadierManager<BukkitBrigadierCommandSource> brigadierManager;
 
     public PaperBrigadierManager(Plugin plugin, PaperCommandManager manager) {
-        manager.verifyUnstableAPI("brigadier");
         manager.log(LogLevel.INFO, "Enabled Brigadier Support!");
 
         this.manager = manager;

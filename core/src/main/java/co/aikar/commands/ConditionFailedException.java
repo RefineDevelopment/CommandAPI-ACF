@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Daniel Ennis (Aikar) - MIT License
+ * Copyright (c) 2016-2024 Daniel Ennis (Aikar) - MIT License
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -24,6 +24,7 @@
 package co.aikar.commands;
 
 
+import co.aikar.commands.InvalidCommandArgument;
 
 public class ConditionFailedException extends InvalidCommandArgument {
     public ConditionFailedException() {

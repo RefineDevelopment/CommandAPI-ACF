@@ -84,7 +84,7 @@ public class CommandHelp {
         });
     }
 
-    @UnstableAPI // Not sure on this one yet even when API becomes unstable
+    // Not sure on this one yet even when API becomes unstable
     protected void updateSearchScore(HelpEntry help) {
         if (this.search == null || this.search.isEmpty()) {
             help.setSearchScore(1);

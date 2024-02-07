@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -43,9 +42,8 @@ import java.util.stream.IntStream;
 public class CommandCompletions<C extends CommandCompletionContext> {
     private static final String DEFAULT_ENUM_ID = "@__defaultenum__";
     private final CommandManager manager;
-    // TODO: use a CompletionProvider that can return a delegated Id or provide values such as enum support
-    private Map<String, CommandCompletionHandler> completionMap = new HashMap<>();
-    private Map<Class, String> defaultCompletions = new HashMap<>();
+    private final Map<String, CommandCompletionHandler> completionMap = new HashMap<>();
+    private final Map<Class<?>, String> defaultCompletions = new HashMap<>();
 
     public CommandCompletions(CommandManager manager) {
         this.manager = manager;
@@ -80,6 +78,19 @@ public class CommandCompletions<C extends CommandCompletionContext> {
      */
     public CommandCompletionHandler registerCompletion(String id, CommandCompletionHandler<C> handler) {
         return this.completionMap.put(prepareCompletionId(id), handler);
+    }
+
+    /**
+     * Register a completion handler to provide command completions based on the user input and set it as default.
+     *
+     * @param id
+     * @param handler
+     * @param clazz
+     * @return
+     */
+    public void registerCompletion(String id, CommandCompletionHandler<C> handler, Class<?> clazz) {
+        this.completionMap.put(prepareCompletionId(id), handler);
+        setDefaultCompletion(id, clazz);
     }
 
     /**

@@ -42,10 +42,6 @@ public class VelocityCommandContexts extends CommandContexts<VelocityCommandExec
     VelocityCommandContexts(ProxyServer server, CommandManager manager) {
         super(manager);
         registerContext(OnlinePlayer.class, (c) -> getOnlinePlayer(server, c));
-        registerContext(co.aikar.commands.contexts.OnlinePlayer.class, c -> {
-            OnlinePlayer onlinePlayer = getOnlinePlayer(server, c);
-            return new co.aikar.commands.contexts.OnlinePlayer(onlinePlayer.getPlayer());
-        });
         registerIssuerAwareContext(CommandSource.class, VelocityCommandExecutionContext::getSender);
         registerIssuerAwareContext(Player.class, (c) -> {
             Player proxiedPlayer = c.getSender() instanceof Player ? (Player) c.getSender() : null;

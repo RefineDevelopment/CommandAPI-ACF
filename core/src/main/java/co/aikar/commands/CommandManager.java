@@ -25,6 +25,9 @@ package co.aikar.commands;
 
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.util.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -33,18 +36,15 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
 
 @SuppressWarnings("WeakerAccess")
+@NoArgsConstructor
 public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends CommandExecutionContext<CEC, I>, CC extends ConditionContext<I>> {
-
-    protected CommandManager() {}
 
     protected CommandManager(CommandManager<IT, I, CEC, CC> copyFrom) {
         this.replacements = copyFrom.replacements;
@@ -53,8 +53,8 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
         this.helpFormatter = copyFrom.helpFormatter;
         this.defaultHelpPerPage = copyFrom.defaultHelpPerPage;
         this.logUnhandledExceptions = copyFrom.logUnhandledExceptions;
-        this.unstableAPIs = copyFrom.unstableAPIs;
         this.annotations = copyFrom.annotations;
+        this.dependencies = copyFrom.dependencies;
     }
 
     /**
@@ -70,13 +70,20 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
     protected CommandReplacements replacements = new CommandReplacements(this);
     protected CommandConditions<I, CEC, CC> conditions = new CommandConditions<>(this);
     protected Map<String, RootCommand> rootCommands = new HashMap<>();
-    protected ExceptionHandler defaultExceptionHandler = null;
+    /**
+     * -- GETTER --
+     *  Gets the current default exception handler, might be null.
+     *
+     * @return the default exception handler
+     */
+    @Getter protected ExceptionHandler defaultExceptionHandler = null;
     protected Table<Class<?>, String, Object> dependencies = new Table<>();
-    protected CommandHelpFormatter helpFormatter = new CommandHelpFormatter(this);
+    @Setter @Getter protected CommandHelpFormatter helpFormatter = new CommandHelpFormatter(this);
+    @Setter
+    @Getter
     protected int defaultHelpPerPage = 10;
 
     boolean logUnhandledExceptions = true;
-    private Set<String> unstableAPIs = new HashSet<>();
 
     private Annotations annotations = new Annotations<>(this);
     private CommandRouter router = new CommandRouter(this);
@@ -117,9 +124,7 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
      * @deprecated Unstable API
      */
     @Deprecated
-    @UnstableAPI
     public CommandHelp generateCommandHelp(@NotNull String command) {
-        verifyUnstableAPI("help");
         CommandOperationContext context = getCurrentCommandOperationContext();
         if (context == null) {
             throw new IllegalStateException("This method can only be called as part of a command execution.");
@@ -127,23 +132,11 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
         return generateCommandHelp(context.getCommandIssuer(), command);
     }
 
-    /**
-     * @deprecated Unstable API
-     */
-    @Deprecated
-    @UnstableAPI
     public CommandHelp generateCommandHelp(CommandIssuer issuer, @NotNull String command) {
-        verifyUnstableAPI("help");
         return generateCommandHelp(issuer, obtainRootCommand(command));
     }
 
-    /**
-     * @deprecated Unstable API
-     */
-    @Deprecated
-    @UnstableAPI
     public CommandHelp generateCommandHelp() {
-        verifyUnstableAPI("help");
         CommandOperationContext context = getCurrentCommandOperationContext();
         if (context == null) {
             throw new IllegalStateException("This method can only be called as part of a command execution.");
@@ -152,52 +145,8 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
         return generateCommandHelp(context.getCommandIssuer(), this.obtainRootCommand(commandLabel));
     }
 
-    /**
-     * @deprecated Unstable API
-     */
-    @Deprecated
-    @UnstableAPI
     public CommandHelp generateCommandHelp(CommandIssuer issuer, RootCommand rootCommand) {
-        verifyUnstableAPI("help");
         return new CommandHelp(this, rootCommand, issuer);
-    }
-
-    /**
-     * @deprecated Unstable API
-     */
-    @Deprecated
-    @UnstableAPI
-    public int getDefaultHelpPerPage() {
-        verifyUnstableAPI("help");
-        return defaultHelpPerPage;
-    }
-
-    /**
-     * @deprecated Unstable API
-     */
-    @Deprecated
-    @UnstableAPI
-    public void setDefaultHelpPerPage(int defaultHelpPerPage) {
-        verifyUnstableAPI("help");
-        this.defaultHelpPerPage = defaultHelpPerPage;
-    }
-
-    /**
-     * @deprecated Unstable API
-     */
-    @Deprecated
-    @UnstableAPI
-    public CommandHelpFormatter getHelpFormatter() {
-        return helpFormatter;
-    }
-
-    /**
-     * @deprecated Unstable API
-     */
-    @Deprecated
-    @UnstableAPI
-    public void setHelpFormatter(CommandHelpFormatter helpFormatter) {
-        this.helpFormatter = helpFormatter;
     }
 
     CommandRouter getRouter() {
@@ -303,15 +252,6 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
 
     public boolean isLoggingUnhandledExceptions() {
         return this.logUnhandledExceptions;
-    }
-
-    /**
-     * Gets the current default exception handler, might be null.
-     *
-     * @return the default exception handler
-     */
-    public ExceptionHandler getDefaultExceptionHandler() {
-        return defaultExceptionHandler;
     }
 
     /**
@@ -424,25 +364,6 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
             }
             clazz = clazz.getSuperclass();
         } while (!clazz.equals(BaseCommand.class));
-    }
-
-    /**
-     * @deprecated Use this with caution! If you enable and use Unstable API's, your next compile using ACF
-     * may require you to update your implementation to those unstable API's
-     */
-    @Deprecated
-    public void enableUnstableAPI(String api) {
-        unstableAPIs.add(api);
-    }
-
-    void verifyUnstableAPI(String api) {
-        if (!unstableAPIs.contains(api)) {
-            throw new IllegalStateException("Using an unstable API that has not been enabled ( " + api + "). See https://acfunstable.emc.gs");
-        }
-    }
-
-    boolean hasUnstableAPI(String api) {
-        return unstableAPIs.contains(api);
     }
 
     Annotations getAnnotations() {

@@ -23,10 +23,7 @@ import java.util.function.Predicate;
  *
  * @param <S>
  * @author MiniDigger
- * @deprecated Unstable API
  */
-@Deprecated
-@UnstableAPI
 public class ACFBrigadierManager<S> {
 
     protected final CommandManager<?, ?, ?, ?> manager;
@@ -39,8 +36,6 @@ public class ACFBrigadierManager<S> {
      * @param manager
      */
     ACFBrigadierManager(CommandManager<?, ?, ?, ?> manager) {
-        manager.verifyUnstableAPI("brigadier");
-
         this.manager = manager;
 
         // TODO support stuff like min max via brigadier?

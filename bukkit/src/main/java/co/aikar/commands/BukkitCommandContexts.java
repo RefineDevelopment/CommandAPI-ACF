@@ -53,10 +53,6 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
         super(manager);
 
         registerContext(OnlinePlayer.class, c -> getOnlinePlayer(c.getIssuer(), c.popFirstArg(), false));
-        registerContext(co.aikar.commands.contexts.OnlinePlayer.class, c -> {
-            OnlinePlayer onlinePlayer = getOnlinePlayer(c.getIssuer(), c.popFirstArg(), false);
-            return new co.aikar.commands.contexts.OnlinePlayer(onlinePlayer.getPlayer());
-        });
         registerContext(OnlinePlayer[].class, (c) -> {
             BukkitCommandIssuer issuer = c.getIssuer();
             final String search = c.popFirstArg();
@@ -76,7 +72,7 @@ public class BukkitCommandContexts extends CommandContexts<BukkitCommandExecutio
             if (players.isEmpty() && !c.hasFlag("allowempty")) {
                 throw new InvalidCommandArgument(MessageConfig.IMP.ERROR.PLAYER.NO_ONLINE_PLAYER_FOUND.replace("<search>", search), false);
             }
-            return players.toArray(new OnlinePlayer[players.size()]);
+            return players.toArray(new OnlinePlayer[0]);
         });
         registerIssuerAwareContext(World.class, (c) -> {
             String firstArg = c.getFirstArg();

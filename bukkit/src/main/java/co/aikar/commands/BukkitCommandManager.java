@@ -96,14 +96,7 @@ public class BukkitCommandManager extends CommandManager<
             this.mcPatchVersion = -1;
         }
 
-        Bukkit.getHelpMap().registerHelpTopicFactory(BukkitRootCommand.class, command -> {
-            if (hasUnstableAPI("help")) {
-                return new ACFBukkitHelpTopic(this, (BukkitRootCommand) command);
-            } else {
-                return new GenericCommandHelpTopic(command);
-            }
-        });
-
+        Bukkit.getHelpMap().registerHelpTopicFactory(BukkitRootCommand.class, command -> new ACFBukkitHelpTopic(this, (BukkitRootCommand) command));
         Bukkit.getPluginManager().registerEvents(new ACFBukkitListener(this, plugin), plugin);
 
         registerDependency(plugin.getClass(), plugin);
@@ -144,14 +137,7 @@ public class BukkitCommandManager extends CommandManager<
             this.mcPatchVersion = -1;
         }
 
-        Bukkit.getHelpMap().registerHelpTopicFactory(BukkitRootCommand.class, command -> {
-            if (hasUnstableAPI("help")) {
-                return new ACFBukkitHelpTopic(this, (BukkitRootCommand) command);
-            } else {
-                return new GenericCommandHelpTopic(command);
-            }
-        });
-
+        Bukkit.getHelpMap().registerHelpTopicFactory(BukkitRootCommand.class, command -> new ACFBukkitHelpTopic(this, (BukkitRootCommand) command));
         Bukkit.getPluginManager().registerEvents(new ACFBukkitListener(this, plugin), plugin);
 
         registerDependency(plugin.getClass(), plugin);
