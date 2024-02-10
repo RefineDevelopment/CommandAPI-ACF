@@ -36,13 +36,6 @@ import static co.aikar.commands.BaseCommand.CATCHUNKNOWN;
 import static co.aikar.commands.BaseCommand.DEFAULT;
 
 class CommandRouter {
-
-    private final CommandManager manager;
-
-    CommandRouter(CommandManager manager) {
-        this.manager = manager;
-    }
-
     CommandRouteResult matchCommand(RouteSearch search, boolean completion) {
         Set<RegisteredCommand> cmds = search.commands;
         String[] args = search.args;

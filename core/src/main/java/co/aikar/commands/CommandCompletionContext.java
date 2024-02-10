@@ -23,6 +23,8 @@
 
 package co.aikar.commands;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +33,11 @@ import java.util.Map;
 public class CommandCompletionContext<I extends CommandIssuer> {
     private final RegisteredCommand command;
     protected final I issuer;
+    @Getter
     private final String input;
+    @Getter
     private final String config;
+    @Getter
     private final Map<String, String> configs = new HashMap<>();
     private final List<String> args;
 
@@ -52,10 +57,6 @@ public class CommandCompletionContext<I extends CommandIssuer> {
         }
 
         this.args = Arrays.asList(args);
-    }
-
-    public Map<String, String> getConfigs() {
-        return configs;
     }
 
     public String getConfig(String key) {
@@ -116,14 +117,6 @@ public class CommandCompletionContext<I extends CommandIssuer> {
 
     public CommandIssuer getIssuer() {
         return issuer;
-    }
-
-    public String getInput() {
-        return input;
-    }
-
-    public String getConfig() {
-        return config;
     }
 
     public boolean isAsync() {

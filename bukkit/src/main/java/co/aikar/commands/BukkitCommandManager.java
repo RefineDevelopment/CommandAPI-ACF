@@ -76,7 +76,6 @@ public class BukkitCommandManager extends CommandManager<
     protected Map<String, BukkitRootCommand> registeredCommands = new HashMap<>();
     protected BukkitCommandContexts contexts;
     protected BukkitCommandCompletions completions;
-    protected boolean autoDetectFromClient = true;
 
     public BukkitCommandManager(Plugin plugin) {
         this.plugin = plugin;

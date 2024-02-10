@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BungeeRootCommand extends Command implements RootCommand, TabExecutor {
-
     private final BungeeCommandManager manager;
     private final String name;
     private BaseCommand defCommand;

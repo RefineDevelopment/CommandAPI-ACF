@@ -24,18 +24,15 @@
 package co.aikar.commands;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@RequiredArgsConstructor
 public class HelpEntry {
 
     private final CommandHelp commandHelp;
     private final RegisteredCommand command;
-    @Getter
-    private int searchScore = 1;
-
-    HelpEntry(CommandHelp commandHelp, RegisteredCommand command) {
-        this.commandHelp = commandHelp;
-        this.command = command;
-    }
+    @Setter @Getter private int searchScore = 1;
 
     RegisteredCommand getRegisteredCommand() {
         return this.command;
@@ -55,10 +52,6 @@ public class HelpEntry {
 
     public String getDescription(){
         return this.command.getHelpText();
-    }
-
-    public void setSearchScore(int searchScore) {
-        this.searchScore = searchScore;
     }
 
     public boolean shouldShow() {

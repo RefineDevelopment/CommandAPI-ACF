@@ -30,7 +30,6 @@ public class BukkitRegisteredCommand extends RegisteredCommand<BukkitCommandExec
         super(scope, command, method, prefSubCommand);
     }
 
-
     @Override
     public void preCommand() {
         super.preCommand();

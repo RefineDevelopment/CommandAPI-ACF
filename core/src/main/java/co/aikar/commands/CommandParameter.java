@@ -37,6 +37,8 @@ import co.aikar.commands.contexts.ContextResolver;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import co.aikar.commands.contexts.IssuerOnlyContextResolver;
 import co.aikar.commands.contexts.OptionalContextResolver;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -45,31 +47,31 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends CommandIssuer>> {
-    private final Parameter parameter;
-    private final Class<?> type;
-    private final String name;
-    private final CommandManager manager;
-    private final int paramIndex;
+public class CommandParameter<CEC extends CommandExecutionContext<? extends CommandIssuer>> {
+    @Getter private final Parameter parameter;
+    @Getter private final Class<?> type;
+    @Getter private final String name;
+    @Getter private final CommandManager manager;
+    @Getter private final int paramIndex;
 
-    private ContextResolver<?, CEC> resolver;
-    private boolean optional;
+    @Setter @Getter private ContextResolver<?, CEC> resolver;
+    @Getter @Setter private boolean optional;
     private Set<String> permissions = new HashSet<>();
     private String permission;
-    private String description;
-    private String defaultValue;
-    private String syntax;
-    private String conditions;
-    private boolean requiresInput;
-    private boolean commandIssuer;
-    private String[] values;
-    private Map<String, String> flags;
-    private boolean canConsumeInput;
-    private boolean optionalResolver;
+    @Getter @Setter private String description;
+    @Setter @Getter private String defaultValue;
+    @Setter private String syntax;
+    @Getter @Setter private String conditions;
+    @Setter private boolean requiresInput;
+    @Setter @Getter private boolean commandIssuer;
+    @Setter @Getter private String[] values;
+    @Setter @Getter private Map<String, String> flags;
+    @Setter private boolean canConsumeInput;
+    @Getter @Setter private boolean optionalResolver;
     boolean consumesRest;
     private boolean isLast;
     private boolean isOptionalInput;
-    private CommandParameter<CEC> nextParam;
+    @Getter @Setter private CommandParameter<CEC> nextParam;
 
     public CommandParameter(RegisteredCommand<CEC> command, Parameter param, int paramIndex, boolean isLast) {
         this.parameter = param;
@@ -157,108 +159,16 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
     }
 
 
-    public Parameter getParameter() {
-        return parameter;
-    }
-
-    public Class<?> getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public CommandManager getManager() {
-        return manager;
-    }
-
-    public int getParamIndex() {
-        return paramIndex;
-    }
-
-    public ContextResolver<?, CEC> getResolver() {
-        return resolver;
-    }
-
-    public void setResolver(ContextResolver<?, CEC> resolver) {
-        this.resolver = resolver;
-    }
-
     public boolean isOptionalInput() {
         return isOptionalInput;
-    }
-
-    public boolean isOptional() {
-        return optional;
-    }
-
-    public void setOptional(boolean optional) {
-        this.optional = optional;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    public boolean isCommandIssuer() {
-        return commandIssuer;
-    }
-
-    public void setCommandIssuer(boolean commandIssuer) {
-        this.commandIssuer = commandIssuer;
-    }
-
-    public String[] getValues() {
-        return values;
-    }
-
-    public void setValues(String[] values) {
-        this.values = values;
-    }
-
-    public Map<String, String> getFlags() {
-        return flags;
-    }
-
-    public void setFlags(Map<String, String> flags) {
-        this.flags = flags;
     }
 
     public boolean canConsumeInput() {
         return canConsumeInput;
     }
 
-    public void setCanConsumeInput(boolean canConsumeInput) {
-        this.canConsumeInput = canConsumeInput;
-    }
-
-    public void setOptionalResolver(boolean optionalResolver) {
-        this.optionalResolver = optionalResolver;
-    }
-
-    public boolean isOptionalResolver() {
-        return optionalResolver;
-    }
-
     public boolean requiresInput() {
         return requiresInput;
-    }
-
-    public void setRequiresInput(boolean requiresInput) {
-        this.requiresInput = requiresInput;
     }
 
     public String getSyntax() {
@@ -272,28 +182,8 @@ public class CommandParameter<CEC extends CommandExecutionContext<CEC, ? extends
         return syntax;
     }
 
-    public void setSyntax(String syntax) {
-        this.syntax = syntax;
-    }
-
-    public String getConditions() {
-        return conditions;
-    }
-
-    public void setConditions(String conditions) {
-        this.conditions = conditions;
-    }
-
     public Set<String> getRequiredPermissions() {
         return permissions;
-    }
-
-    public void setNextParam(CommandParameter<CEC> nextParam) {
-        this.nextParam = nextParam;
-    }
-
-    public CommandParameter<CEC> getNextParam() {
-        return nextParam;
     }
 
     public boolean canExecuteWithoutInput() {

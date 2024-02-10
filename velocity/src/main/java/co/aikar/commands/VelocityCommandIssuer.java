@@ -25,45 +25,33 @@ package co.aikar.commands;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
+@RequiredArgsConstructor
 public class VelocityCommandIssuer implements CommandIssuer {
     private final VelocityCommandManager manager;
-    private final CommandSource source;
-
-    VelocityCommandIssuer(VelocityCommandManager manager, CommandSource source) {
-        this.manager = manager;
-        this.source = source;
-    }
-
-
-    @Override
-    public CommandSource getIssuer() {
-        return source;
-    }
+    private final CommandSource issuer;
 
     public Player getPlayer() {
-        return isPlayer() ? (Player) source : null;
-    }
-
-    @Override
-    public CommandManager getManager() {
-        return manager;
+        return isPlayer() ? (Player) issuer : null;
     }
 
     @Override
     public boolean isPlayer() {
-        return source instanceof Player;
+        return issuer instanceof Player;
     }
 
     @Override
     public @NotNull UUID getUniqueId() {
         if (isPlayer()) {
-            return ((Player) source).getUniqueId();
+            return ((Player) issuer).getUniqueId();
         }
 
         // TODO: Find a better solution for this
@@ -73,17 +61,17 @@ public class VelocityCommandIssuer implements CommandIssuer {
 
     @Override
     public void sendMessageInternal(String message) {
-        source.sendMessage(ACFVelocityUtil.color(message));
+        issuer.sendMessage(ACFVelocityUtil.color(message));
     }
 
     @Override
     public boolean hasPermission(String name) {
-        return source.hasPermission(name);
+        return issuer.hasPermission(name);
     }
 
     @Override
     public void sendClickable(String message, String hover, String command, String suggest) {
-        new Clickable(message, hover, command, suggest).sendToPlayer(source);
+        new Clickable(message, hover, command, suggest).sendToPlayer(issuer);
     }
 
     @Override
@@ -94,7 +82,7 @@ public class VelocityCommandIssuer implements CommandIssuer {
             clickable.add(clickablePart.getMessage(), clickablePart.getHover(), clickablePart.getCommand(), clickablePart.getSuggest());
         }
 
-        clickable.sendToPlayer(source);
+        clickable.sendToPlayer(issuer);
     }
 
     @Override
@@ -102,11 +90,11 @@ public class VelocityCommandIssuer implements CommandIssuer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VelocityCommandIssuer that = (VelocityCommandIssuer) o;
-        return Objects.equals(source, that.source);
+        return Objects.equals(issuer, that.issuer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(source);
+        return Objects.hash(issuer);
     }
 }

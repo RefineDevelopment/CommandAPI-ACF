@@ -30,20 +30,16 @@ import java.util.concurrent.CompletableFuture;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import com.velocitypowered.api.command.SimpleCommand;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class VelocityRootCommand implements SimpleCommand, RootCommand {
-
     private final VelocityCommandManager manager;
     private final String name;
     private BaseCommand defCommand;
     private SetMultimap<String, RegisteredCommand> subCommands = HashMultimap.create();
     private List<BaseCommand> children = new ArrayList<>();
     boolean isRegistered = false;
-
-    VelocityRootCommand(VelocityCommandManager manager, String name) {
-        this.manager = manager;
-        this.name = name;
-    }
 
     @Override
     public String getCommandName() {
@@ -83,7 +79,6 @@ public class VelocityRootCommand implements SimpleCommand, RootCommand {
     public void execute(Invocation invocation) {
         execute(manager.getCommandIssuer(invocation.source()), getCommandName(), invocation.arguments());
     }
-
 
     @Override
     public List<String> suggest(Invocation invocation) {

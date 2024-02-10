@@ -25,6 +25,7 @@ package co.aikar.commands;
 
 
 import co.aikar.commands.apachecommonslang.ApacheCommonsLangUtil;
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
@@ -44,30 +45,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
+@UtilityClass
 public final class ACFUtil {
+    public final Random RANDOM = new Random();
 
-    public static final Random RANDOM = new Random();
-
-    private ACFUtil() {
-    }
-
-    public static String padRight(String s, int n) {
+    public String padRight(String s, int n) {
         return String.format("%1$-" + n + "s", s);
     }
 
-    public static String padLeft(String s, int n) {
+    public String padLeft(String s, int n) {
         return String.format("%1$" + n + "s", s);
     }
 
-    public static String formatNumber(Integer balance) {
+    public String formatNumber(Integer balance) {
         return NumberFormat.getInstance().format(balance);
     }
 
-    public static <T extends Enum> T getEnumFromName(T[] types, String name) {
+    public <T extends Enum> T getEnumFromName(T[] types, String name) {
         return getEnumFromName(types, name, null);
     }
 
-    public static <T extends Enum> T getEnumFromName(T[] types, String name, T def) {
+    public <T extends Enum> T getEnumFromName(T[] types, String name, T def) {
         for (T type : types) {
             if (type.name().equalsIgnoreCase(name)) {
                 return type;
@@ -76,7 +74,7 @@ public final class ACFUtil {
         return def;
     }
 
-    public static <T extends Enum> T getEnumFromOrdinal(T[] types, int ordinal) {
+    public <T extends Enum> T getEnumFromOrdinal(T[] types, int ordinal) {
         for (T type : types) {
             if (type.ordinal() == ordinal) {
                 return type;
@@ -85,15 +83,15 @@ public final class ACFUtil {
         return null;
     }
 
-    public static String ucfirst(String str) {
+    public String ucfirst(String str) {
         return ApacheCommonsLangUtil.capitalizeFully(str);
     }
 
-    public static Double parseDouble(String var) {
+    public Double parseDouble(String var) {
         return parseDouble(var, null);
     }
 
-    public static Double parseDouble(String var, Double def) {
+    public Double parseDouble(String var, Double def) {
         if (var == null) {
             return def;
         }
@@ -104,11 +102,11 @@ public final class ACFUtil {
         return def;
     }
 
-    public static Float parseFloat(String var) {
+    public Float parseFloat(String var) {
         return parseFloat(var, null);
     }
 
-    public static Float parseFloat(String var, Float def) {
+    public Float parseFloat(String var, Float def) {
         if (var == null) {
             return def;
         }
@@ -119,11 +117,11 @@ public final class ACFUtil {
         return def;
     }
 
-    public static Long parseLong(String var) {
+    public Long parseLong(String var) {
         return parseLong(var, null);
     }
 
-    public static Long parseLong(String var, Long def) {
+    public Long parseLong(String var, Long def) {
         if (var == null) {
             return def;
         }
@@ -134,11 +132,11 @@ public final class ACFUtil {
         return def;
     }
 
-    public static Integer parseInt(String var) {
+    public Integer parseInt(String var) {
         return parseInt(var, null);
     }
 
-    public static Integer parseInt(String var, Integer def) {
+    public Integer parseInt(String var, Integer def) {
         if (var == null) {
             return def;
         }
@@ -149,51 +147,51 @@ public final class ACFUtil {
         return def;
     }
 
-    public static boolean randBool() {
+    public boolean randBool() {
         return RANDOM.nextBoolean();
     }
 
-    public static <T> T nullDefault(Object val, Object def) {
+    public <T> T nullDefault(Object val, Object def) {
         //noinspection unchecked
         return (T) (val != null ? val : def);
     }
 
-    public static String join(Collection<String> args) {
+    public String join(Collection<String> args) {
         return ApacheCommonsLangUtil.join(args, " ");
     }
 
-    public static String join(Collection<String> args, String sep) {
+    public String join(Collection<String> args, String sep) {
         return ApacheCommonsLangUtil.join(args, sep);
     }
 
-    public static String join(String[] args) {
+    public String join(String[] args) {
         return join(args, 0, ' ');
     }
 
-    public static String join(String[] args, String sep) {
+    public String join(String[] args, String sep) {
         return ApacheCommonsLangUtil.join(args, sep);
     }
 
-    public static String join(String[] args, char sep) {
+    public String join(String[] args, char sep) {
         return join(args, 0, sep);
     }
 
-    public static String join(String[] args, int index) {
+    public String join(String[] args, int index) {
         return join(args, index, ' ');
     }
 
-    public static String join(String[] args, int index, char sep) {
+    public String join(String[] args, int index, char sep) {
         return ApacheCommonsLangUtil.join(args, sep, index, args.length);
     }
 
-    public static String simplifyString(String str) {
+    public String simplifyString(String str) {
         if (str == null) {
             return null;
         }
         return ACFPatterns.NON_ALPHA_NUMERIC.matcher(str.toLowerCase()).replaceAll("");
     }
 
-    public static double round(double x, int scale) {
+    public double round(double x, int scale) {
         try {
             return (new BigDecimal
                     (Double.toString(x))
@@ -208,7 +206,7 @@ public final class ACFUtil {
         }
     }
 
-    public static int roundUp(int num, int multiple) {
+    public int roundUp(int num, int multiple) {
         if (multiple == 0) {
             return num;
         }
@@ -221,7 +219,7 @@ public final class ACFUtil {
 
     }
 
-    public static String limit(String str, int limit) {
+    public String limit(String str, int limit) {
         return str.length() > limit ? str.substring(0, limit) : str;
     }
 
@@ -233,7 +231,7 @@ public final class ACFUtil {
      * @param repl
      * @return
      */
-    public static String replace(String string, Pattern pattern, String repl) {
+    public String replace(String string, Pattern pattern, String repl) {
         return pattern.matcher(string).replaceAll(Matcher.quoteReplacement(repl));
     }
 
@@ -245,7 +243,7 @@ public final class ACFUtil {
      * @param repl
      * @return
      */
-    public static String replacePattern(String string, Pattern pattern, String repl) {
+    public String replacePattern(String string, Pattern pattern, String repl) {
         return pattern.matcher(string).replaceAll(repl);
     }
 
@@ -257,7 +255,7 @@ public final class ACFUtil {
      * @param repl
      * @return
      */
-    public static String replace(String string, String pattern, String repl) {
+    public String replace(String string, String pattern, String repl) {
         return replace(string, ACFPatterns.getPattern(Pattern.quote(pattern)), repl);
     }
 
@@ -269,7 +267,7 @@ public final class ACFUtil {
      * @param repl
      * @return
      */
-    public static String replacePattern(String string, String pattern, String repl) {
+    public String replacePattern(String string, String pattern, String repl) {
         return replace(string, ACFPatterns.getPattern(pattern), repl);
     }
 
@@ -281,7 +279,7 @@ public final class ACFUtil {
      * @param repl
      * @return
      */
-    public static String replacePatternMatch(String string, Pattern pattern, String repl) {
+    public String replacePatternMatch(String string, Pattern pattern, String repl) {
         return pattern.matcher(string).replaceAll(repl);
     }
 
@@ -293,11 +291,11 @@ public final class ACFUtil {
      * @param repl
      * @return
      */
-    public static String replacePatternMatch(String string, String pattern, String repl) {
+    public String replacePatternMatch(String string, String pattern, String repl) {
         return replacePatternMatch(string, ACFPatterns.getPattern(pattern), repl);
     }
 
-    public static String replaceStrings(String string, String... replacements) {
+    public String replaceStrings(String string, String... replacements) {
         if (replacements.length < 2 || replacements.length % 2 != 0) {
             throw new IllegalArgumentException("Invalid Replacements");
         }
@@ -310,7 +308,7 @@ public final class ACFUtil {
         return string;
     }
 
-    public static String replacePatterns(String string, String... replacements) {
+    public String replacePatterns(String string, String... replacements) {
         if (replacements.length < 2 || replacements.length % 2 != 0) {
             throw new IllegalArgumentException("Invalid Replacements");
         }
@@ -323,22 +321,22 @@ public final class ACFUtil {
         return string;
     }
 
-    public static String capitalize(String str, char[] delimiters) {
+    public String capitalize(String str, char[] delimiters) {
         return ApacheCommonsLangUtil.capitalize(str, delimiters);
     }
 
-    private static boolean isDelimiter(char ch, char[] delimiters) {
+    private boolean isDelimiter(char ch, char[] delimiters) {
         return ApacheCommonsLangUtil.isDelimiter(ch, delimiters);
     }
 
-    public static <T> T random(List<T> arr) {
+    public <T> T random(List<T> arr) {
         if (arr == null || arr.isEmpty()) {
             return null;
         }
         return arr.get(RANDOM.nextInt(arr.size()));
     }
 
-    public static <T> T random(T[] arr) {
+    public <T> T random(T[] arr) {
         if (arr == null || arr.length == 0) {
             return null;
         }
@@ -354,18 +352,18 @@ public final class ACFUtil {
      * @return
      */
     @Deprecated
-    public static <T extends Enum<?>> T random(Class<? extends T> enm) {
+    public <T extends Enum<?>> T random(Class<? extends T> enm) {
         return random(enm.getEnumConstants());
     }
 
-    public static String normalize(String s) {
+    public String normalize(String s) {
         if (s == null) {
             return null;
         }
         return ACFPatterns.NON_PRINTABLE_CHARACTERS.matcher(Normalizer.normalize(s, Form.NFD)).replaceAll("");
     }
 
-    public static int indexOf(String arg, String[] split) {
+    public int indexOf(String arg, String[] split) {
         for (int i = 0; i < split.length; i++) {
             if (arg == null) {
                 if (split[i] == null) {
@@ -378,11 +376,11 @@ public final class ACFUtil {
         return -1;
     }
 
-    public static String capitalizeFirst(String name) {
+    public String capitalizeFirst(String name) {
         return capitalizeFirst(name, '_');
     }
 
-    public static String capitalizeFirst(String name, char separator) {
+    public String capitalizeFirst(String name, char separator) {
         name = name.toLowerCase();
         String[] split = name.split(Character.toString(separator));
         StringBuilder total = new StringBuilder(3);
@@ -393,7 +391,7 @@ public final class ACFUtil {
         return total.toString().trim();
     }
 
-    public static String ltrim(String s) {
+    public String ltrim(String s) {
         int i = 0;
         while (i < s.length() && Character.isWhitespace(s.charAt(i))) {
             i++;
@@ -401,7 +399,7 @@ public final class ACFUtil {
         return s.substring(i);
     }
 
-    public static String rtrim(String s) {
+    public String rtrim(String s) {
         int i = s.length() - 1;
         while (i >= 0 && Character.isWhitespace(s.charAt(i))) {
             i--;
@@ -409,19 +407,19 @@ public final class ACFUtil {
         return s.substring(0, i + 1);
     }
 
-    public static List<String> enumNames(Enum<?>[] values) {
+    public List<String> enumNames(Enum<?>[] values) {
         return Stream.of(values).map(Enum::name).collect(Collectors.toList());
     }
 
-    public static List<String> enumNames(Class<? extends Enum<?>> cls) {
+    public List<String> enumNames(Class<? extends Enum<?>> cls) {
         return enumNames(cls.getEnumConstants());
     }
 
-    public static String combine(String[] args) {
+    public String combine(String[] args) {
         return combine(args, 0);
     }
 
-    public static String combine(String[] args, int start) {
+    public String combine(String[] args, int start) {
         int size = 0;
         for (int i = start; i < args.length; i++) {
             size += args[i].length();
@@ -435,7 +433,7 @@ public final class ACFUtil {
 
 
     @Nullable
-    public static <E extends Enum<E>> E simpleMatch(Class<? extends Enum<?>> list, String item) {
+    public <E extends Enum<E>> E simpleMatch(Class<? extends Enum<?>> list, String item) {
         if (item == null) {
             return null;
         }
@@ -451,7 +449,7 @@ public final class ACFUtil {
         return null;
     }
 
-    public static boolean isTruthy(String test) {
+    public boolean isTruthy(String test) {
         switch (test) {
             case "t":
             case "true":
@@ -465,7 +463,7 @@ public final class ACFUtil {
     }
 
 
-    public static Number parseNumber(String num, boolean suffixes) {
+    public Number parseNumber(String num, boolean suffixes) {
         if (ACFPatterns.getPattern("^0x([0-9A-Fa-f]*)$").matcher(num).matches()) {
             return Long.parseLong(num.substring(2), 16);
         } else if (ACFPatterns.getPattern("^0b([01]*)$").matcher(num).matches()) {
@@ -479,7 +477,7 @@ public final class ACFUtil {
         }
     }
 
-    public static BigDecimal parseBigNumber(String num, boolean suffixes) {
+    public BigDecimal parseBigNumber(String num, boolean suffixes) {
         ApplyModifierToNumber applyModifierToNumber = new ApplyModifierToNumber(num, suffixes).invoke();
         num = applyModifierToNumber.getNum();
         double mod = applyModifierToNumber.getMod();
@@ -488,7 +486,7 @@ public final class ACFUtil {
         return (mod == 1) ? big : big.multiply(new BigDecimal(mod));
     }
 
-    public static <T> boolean hasIntersection(Collection<T> list1, Collection<T> list2) {
+    public <T> boolean hasIntersection(Collection<T> list1, Collection<T> list2) {
         for (T t : list1) {
             if (list2.contains(t)) {
                 return true;
@@ -498,7 +496,7 @@ public final class ACFUtil {
         return false;
     }
 
-    public static <T> Collection<T> intersection(Collection<T> list1, Collection<T> list2) {
+    public <T> Collection<T> intersection(Collection<T> list1, Collection<T> list2) {
         List<T> list = new ArrayList<>();
 
         for (T t : list1) {
@@ -510,7 +508,7 @@ public final class ACFUtil {
         return list;
     }
 
-    public static int rand(int min, int max) {
+    public int rand(int min, int max) {
         return min + RANDOM.nextInt(max - min + 1);
     }
 
@@ -524,19 +522,19 @@ public final class ACFUtil {
      * @param max2
      * @return
      */
-    public static int rand(int min1, int max1, int min2, int max2) {
+    public int rand(int min1, int max1, int min2, int max2) {
         return randBool() ? rand(min1, max1) : rand(min2, max2);
     }
 
-    public static double rand(double min, double max) {
+    public double rand(double min, double max) {
         return RANDOM.nextDouble() * (max - min) + min;
     }
 
-    public static boolean isNumber(String str) {
+    public boolean isNumber(String str) {
         return ApacheCommonsLangUtil.isNumeric(str);
     }
 
-    public static String intToRoman(int integer) {
+    public String intToRoman(int integer) {
         if (integer == 1) {
             return "I";
         }
@@ -570,11 +568,11 @@ public final class ACFUtil {
         return null;
     }
 
-    public static boolean isInteger(String string) {
+    public boolean isInteger(String string) {
         return ACFPatterns.INTEGER.matcher(string).matches();
     }
 
-    public static boolean isFloat(String string) {
+    public boolean isFloat(String string) {
         try {
             Float.parseFloat(string);
             return true;
@@ -583,7 +581,7 @@ public final class ACFUtil {
         }
     }
 
-    public static boolean isDouble(String string) {
+    public boolean isDouble(String string) {
         try {
             Double.parseDouble(string);
             return true;
@@ -592,27 +590,27 @@ public final class ACFUtil {
         }
     }
 
-    public static boolean isBetween(float num, double min, double max) {
+    public boolean isBetween(float num, double min, double max) {
         return num >= min && num <= max;
     }
 
     @SuppressWarnings("SameParameterValue")
-    public static double precision(double x, int p) {
+    public double precision(double x, int p) {
         double pow = Math.pow(10, p);
         return Math.round(x * pow) / pow;
     }
 
-    public static void sneaky(Throwable t) {
+    public void sneaky(Throwable t) {
         //noinspection RedundantTypeArguments
         throw ACFUtil.<RuntimeException>superSneaky(t);
     }
 
-    private static <T extends Throwable> T superSneaky(Throwable t) throws T {
+    private <T extends Throwable> T superSneaky(Throwable t) throws T {
         // noinspection unchecked
         throw (T) t;
     }
 
-    public static <T> List<T> preformOnImmutable(List<T> list, Consumer<List<T>> action) {
+    public <T> List<T> preformOnImmutable(List<T> list, Consumer<List<T>> action) {
         try {
             action.accept(list);
         } catch (UnsupportedOperationException ex) {
@@ -623,7 +621,7 @@ public final class ACFUtil {
         return list;
     }
 
-    public static <T> T getFirstElement(Iterable<T> iterable) {
+    public <T> T getFirstElement(Iterable<T> iterable) {
         if (iterable == null) {
             return null;
         }
@@ -635,7 +633,7 @@ public final class ACFUtil {
         return null;
     }
 
-    private static class ApplyModifierToNumber {
+    private class ApplyModifierToNumber {
         private String num;
         private boolean suffixes;
         private double mod;

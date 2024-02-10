@@ -8,7 +8,6 @@ public class BungeeConditionContext extends ConditionContext <BungeeCommandIssue
         super(issuer, config);
     }
 
-
     public CommandSender getSender() {
         return getIssuer().getIssuer();
     }

@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class BungeeCommandCompletions extends CommandCompletions<BungeeCommandCompletionContext> {
-
     public BungeeCommandCompletions(CommandManager manager) {
         super(manager);
         registerAsyncCompletion("chatcolors", c -> {

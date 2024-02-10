@@ -30,6 +30,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +44,8 @@ import java.util.Map;
 
 public class VelocityCommandManager extends CommandManager<CommandSource, VelocityCommandIssuer, VelocityCommandExecutionContext, VelocityConditionContext> {
 
-    protected final ProxyServer proxy;
-    protected final PluginContainer plugin;
+    @Getter protected final ProxyServer proxy;
+    @Getter protected final PluginContainer plugin;
     protected Map<String, VelocityRootCommand> registeredCommands = new HashMap<>();
     protected VelocityCommandContexts contexts;
     protected VelocityCommandCompletions completions;
@@ -73,14 +74,6 @@ public class VelocityCommandManager extends CommandManager<CommandSource, Veloci
         registerDependency(plugin.getClass(), plugin);
         registerDependency(Plugin.class, plugin);
         registerDependency(ProxyServer.class, proxy);
-    }
-
-    public ProxyServer getProxy() {
-        return this.proxy;
-    }
-
-    public PluginContainer getPlugin() {
-        return this.plugin;
     }
 
     @Override

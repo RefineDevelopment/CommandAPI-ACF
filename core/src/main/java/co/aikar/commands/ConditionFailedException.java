@@ -24,8 +24,6 @@
 package co.aikar.commands;
 
 
-import co.aikar.commands.InvalidCommandArgument;
-
 public class ConditionFailedException extends InvalidCommandArgument {
     public ConditionFailedException() {
         super(false);

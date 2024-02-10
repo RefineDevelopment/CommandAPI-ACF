@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class BungeeCommandContexts extends CommandContexts<BungeeCommandExecutionContext> {
-
     BungeeCommandContexts(CommandManager manager) {
         super(manager);
         registerContext(OnlinePlayer.class, this::getOnlinePlayer);

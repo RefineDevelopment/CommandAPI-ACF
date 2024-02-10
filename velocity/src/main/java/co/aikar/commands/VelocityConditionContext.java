@@ -8,7 +8,6 @@ public class VelocityConditionContext extends ConditionContext <VelocityCommandI
         super(issuer, config);
     }
 
-
     public CommandSource getSender() {
         return getIssuer().getIssuer();
     }

@@ -23,6 +23,8 @@
 
 package co.aikar.commands;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

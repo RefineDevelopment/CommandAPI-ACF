@@ -27,13 +27,12 @@ import co.aikar.util.Table;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted") // No IDEA, you are wrong
 public class CommandConditions<
         I extends CommandIssuer,
-        CEC extends CommandExecutionContext<CEC, I>,
+        CEC extends CommandExecutionContext<I>,
         CC extends ConditionContext<I>
         > {
     private CommandManager manager;

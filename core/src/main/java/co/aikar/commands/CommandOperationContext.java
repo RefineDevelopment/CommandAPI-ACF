@@ -23,6 +23,9 @@
 
 package co.aikar.commands;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.lang.annotation.Annotation;
 import java.util.List;
 
@@ -33,11 +36,11 @@ public class CommandOperationContext<I extends CommandIssuer> {
 
     private final CommandManager manager;
     private final I issuer;
-    private final BaseCommand command;
-    private final String commandLabel;
-    private final String[] args;
+    @Getter private final BaseCommand command;
+    @Getter private final String commandLabel;
+    @Getter private final String[] args;
     private final boolean isAsync;
-    private RegisteredCommand registeredCommand;
+    @Getter @Setter private RegisteredCommand registeredCommand;
     List<String> enumCompletionValues;
 
     CommandOperationContext(CommandManager manager, I issuer, BaseCommand command, String commandLabel, String[] args, boolean isAsync) {
@@ -57,28 +60,8 @@ public class CommandOperationContext<I extends CommandIssuer> {
         return issuer;
     }
 
-    public BaseCommand getCommand() {
-        return command;
-    }
-
-    public String getCommandLabel() {
-        return commandLabel;
-    }
-
-    public String[] getArgs() {
-        return args;
-    }
-
     public boolean isAsync() {
         return isAsync;
-    }
-
-    public void setRegisteredCommand(RegisteredCommand registeredCommand) {
-        this.registeredCommand = registeredCommand;
-    }
-
-    public RegisteredCommand getRegisteredCommand() {
-        return registeredCommand;
     }
 
     /**

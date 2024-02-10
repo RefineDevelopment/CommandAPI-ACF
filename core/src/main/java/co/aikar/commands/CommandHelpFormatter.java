@@ -29,14 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandHelpFormatter {
-
-    private final CommandManager manager;
-
-    public CommandHelpFormatter(CommandManager manager) {
-        this.manager = manager;
-    }
-
-
     public void showAllResults(CommandHelp commandHelp, List<HelpEntry> entries) {
         CommandIssuer issuer = commandHelp.getIssuer();
         printHelpHeader(commandHelp, issuer);

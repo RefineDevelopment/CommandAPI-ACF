@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("WeakerAccess")
-public class CommandContexts<R extends CommandExecutionContext<?, ? extends CommandIssuer>> {
+public class CommandContexts<R extends CommandExecutionContext<? extends CommandIssuer>> {
     protected final Map<Class<?>, ContextResolver<?, R>> contextMap = new HashMap<>();
     protected final CommandManager manager;
 

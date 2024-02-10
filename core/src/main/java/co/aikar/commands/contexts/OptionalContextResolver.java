@@ -34,4 +34,4 @@ import co.aikar.commands.CommandIssuer;
  * @param <T>
  * @param <C>
  */
-public interface OptionalContextResolver <T, C extends CommandExecutionContext<?, ? extends CommandIssuer>> extends ContextResolver <T, C> {}
+public interface OptionalContextResolver <T, C extends CommandExecutionContext<? extends CommandIssuer>> extends ContextResolver <T, C> {}

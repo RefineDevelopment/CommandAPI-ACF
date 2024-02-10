@@ -35,7 +35,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,8 +43,7 @@ import java.util.Stack;
 
 @SuppressWarnings("WeakerAccess")
 @NoArgsConstructor
-public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends CommandExecutionContext<CEC, I>, CC extends ConditionContext<I>> {
-
+public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends CommandExecutionContext<I>, CC extends ConditionContext<I>> {
     protected CommandManager(CommandManager<IT, I, CEC, CC> copyFrom) {
         this.replacements = copyFrom.replacements;
         this.conditions = copyFrom.conditions;
@@ -78,14 +76,14 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
      */
     @Getter protected ExceptionHandler defaultExceptionHandler = null;
     protected Table<Class<?>, String, Object> dependencies = new Table<>();
-    @Setter @Getter protected CommandHelpFormatter helpFormatter = new CommandHelpFormatter(this);
+    @Setter @Getter protected CommandHelpFormatter helpFormatter = new CommandHelpFormatter();
     @Setter
     @Getter
     protected int defaultHelpPerPage = 10;
 
     boolean logUnhandledExceptions = true;
 
-    private Annotations annotations = new Annotations<>(this);
+    @Getter private Annotations annotations = new Annotations<>(this);
     private CommandRouter router = new CommandRouter(this);
 
     public static CommandOperationContext getCurrentCommandOperationContext() {
@@ -365,11 +363,6 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
             clazz = clazz.getSuperclass();
         } while (!clazz.equals(BaseCommand.class));
     }
-
-    Annotations getAnnotations() {
-        return annotations;
-    }
-
     public String getCommandPrefix(CommandIssuer issuer) {
         return "";
     }

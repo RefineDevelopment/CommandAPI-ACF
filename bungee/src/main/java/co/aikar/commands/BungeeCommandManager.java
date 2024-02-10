@@ -25,6 +25,7 @@ package co.aikar.commands;
 
 import co.aikar.commands.apachecommonslang.ApacheCommonsExceptionUtil;
 import co.aikar.commands.config.impl.MessageConfig;
+import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginDescription;
@@ -45,6 +46,7 @@ public class BungeeCommandManager extends CommandManager<
         BungeeConditionContext
         > {
 
+    @Getter
     protected final Plugin plugin;
     protected Map<String, BungeeRootCommand> registeredCommands = new HashMap<>();
     protected BungeeCommandContexts contexts;
@@ -54,8 +56,6 @@ public class BungeeCommandManager extends CommandManager<
         this.plugin = plugin;
 
         new MessageConfig().createConfig(plugin.getDescription().getName());
-
-        plugin.getProxy().getPluginManager().registerListener(plugin, new ACFBungeeListener(this, plugin));
 
         // TODO more default dependencies for bungee
         registerDependency(plugin.getClass(), plugin);
@@ -74,16 +74,10 @@ public class BungeeCommandManager extends CommandManager<
 
         new MessageConfig().createConfig(plugin.getDescription().getName());
 
-        plugin.getProxy().getPluginManager().registerListener(plugin, new ACFBungeeListener(this, plugin));
-
         // TODO more default dependencies for bungee
         registerDependency(plugin.getClass(), plugin);
         registerDependency(Plugin.class, plugin);
         registerDependency(PluginDescription.class, plugin.getDescription());
-    }
-
-    public Plugin getPlugin() {
-        return this.plugin;
     }
 
     @Override

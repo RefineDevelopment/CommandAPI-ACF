@@ -23,6 +23,8 @@
 
 package co.aikar.commands;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -32,48 +34,34 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
+@RequiredArgsConstructor
 public class BungeeCommandIssuer implements CommandIssuer {
     private final BungeeCommandManager manager;
-    private final CommandSender sender;
-
-    BungeeCommandIssuer(BungeeCommandManager manager, CommandSender sender) {
-        this.manager = manager;
-        this.sender = sender;
-    }
-
-
-    @Override
-    public CommandSender getIssuer() {
-        return sender;
-    }
+    private final CommandSender issuer;
 
     public ProxiedPlayer getPlayer() {
-        return isPlayer() ? (ProxiedPlayer) sender : null;
-    }
-
-    @Override
-    public CommandManager getManager() {
-        return manager;
+        return isPlayer() ? (ProxiedPlayer) issuer : null;
     }
 
     @Override
     public boolean isPlayer() {
-        return sender instanceof ProxiedPlayer;
+        return issuer instanceof ProxiedPlayer;
     }
 
     @Override
     public @NotNull UUID getUniqueId() {
         if (isPlayer()) {
-            return ((ProxiedPlayer) sender).getUniqueId();
+            return ((ProxiedPlayer) issuer).getUniqueId();
         }
 
         //generate a unique id based of the name (like for the console command sender)
-        return UUID.nameUUIDFromBytes(sender.getName().getBytes(StandardCharsets.UTF_8));
+        return UUID.nameUUIDFromBytes(issuer.getName().getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public void sendClickable(String message, String hover, String command, String suggest) {
-        new Clickable(CC.translate(message), CC.translate(hover), command, suggest).sendToPlayer(sender);
+        new Clickable(CC.translate(message), CC.translate(hover), command, suggest).sendToPlayer(issuer);
     }
 
     @Override
@@ -84,30 +72,29 @@ public class BungeeCommandIssuer implements CommandIssuer {
             clickable.add(CC.translate(clickablePart.getMessage()), CC.translate(clickablePart.getHover()), clickablePart.getCommand(), clickablePart.getSuggest());
         }
 
-        clickable.sendToPlayer(sender);
+        clickable.sendToPlayer(issuer);
     }
 
     @Override
     public void sendMessageInternal(String message) {
-        sender.sendMessage(CC.translate(message));
+        issuer.sendMessage(CC.translate(message));
     }
 
     @Override
     public boolean hasPermission(String name) {
-        return sender.hasPermission(name);
+        return issuer.hasPermission(name);
     }
-
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BungeeCommandIssuer that = (BungeeCommandIssuer) o;
-        return Objects.equals(sender, that.sender);
+        return Objects.equals(issuer, that.issuer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sender);
+        return Objects.hash(issuer);
     }
 }

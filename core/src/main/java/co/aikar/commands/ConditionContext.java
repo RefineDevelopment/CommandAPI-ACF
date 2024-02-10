@@ -23,12 +23,16 @@
 
 package co.aikar.commands;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConditionContext <I extends CommandIssuer> {
 
+    @Getter
     private final I issuer;
+    @Getter
     private final String config;
     private final Map<String, String> configs;
 
@@ -45,13 +49,6 @@ public class ConditionContext <I extends CommandIssuer> {
     }
 
 
-    public I getIssuer() {
-        return issuer;
-    }
-
-    public String getConfig() {
-        return this.config;
-    }
     public boolean hasConfig(String flag) {
         return configs.containsKey(flag);
     }

@@ -23,6 +23,8 @@
 
 package co.aikar.commands;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -32,47 +34,34 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
+@RequiredArgsConstructor
 public class BukkitCommandIssuer implements CommandIssuer {
     private final BukkitCommandManager manager;
-    private final CommandSender sender;
-
-    BukkitCommandIssuer(BukkitCommandManager manager, CommandSender sender) {
-        this.manager = manager;
-        this.sender = sender;
-    }
+    private final CommandSender issuer;
 
     @Override
     public boolean isPlayer() {
-        return sender instanceof Player;
-    }
-
-    @Override
-    public CommandSender getIssuer() {
-        return sender;
+        return issuer instanceof Player;
     }
 
     public Player getPlayer() {
-        return isPlayer() ? (Player) sender : null;
+        return isPlayer() ? (Player) issuer : null;
     }
 
     @Override
     public @NotNull UUID getUniqueId() {
         if (isPlayer()) {
-            return ((Player) sender).getUniqueId();
+            return ((Player) issuer).getUniqueId();
         }
 
         //generate a unique id based of the name (like for the console command sender)
-        return UUID.nameUUIDFromBytes(sender.getName().getBytes(StandardCharsets.UTF_8));
-    }
-
-    @Override
-    public CommandManager getManager() {
-        return manager;
+        return UUID.nameUUIDFromBytes(issuer.getName().getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public void sendClickable(String message, String hover, String command, String suggest) {
-        new Clickable(CC.translate(message), CC.translate(hover), command, suggest).sendToPlayer(sender);
+        new Clickable(CC.translate(message), CC.translate(hover), command, suggest).sendToPlayer(issuer);
     }
 
     @Override
@@ -83,17 +72,17 @@ public class BukkitCommandIssuer implements CommandIssuer {
             clickable.add(CC.translate(clickablePart.getMessage()), CC.translate(clickablePart.getHover()), clickablePart.getCommand(), clickablePart.getSuggest());
         }
 
-        clickable.sendToPlayer(sender);
+        clickable.sendToPlayer(issuer);
     }
 
     @Override
     public void sendMessageInternal(String message) {
-        sender.sendMessage(CC.translate(message));
+        issuer.sendMessage(CC.translate(message));
     }
 
     @Override
     public boolean hasPermission(String name) {
-        return sender.hasPermission(name);
+        return issuer.hasPermission(name);
     }
 
     @Override
@@ -101,11 +90,11 @@ public class BukkitCommandIssuer implements CommandIssuer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BukkitCommandIssuer that = (BukkitCommandIssuer) o;
-        return Objects.equals(sender, that.sender);
+        return Objects.equals(issuer, that.issuer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sender);
+        return Objects.hash(issuer);
     }
 }

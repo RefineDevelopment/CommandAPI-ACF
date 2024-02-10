@@ -23,6 +23,8 @@
 
 package co.aikar.commands;
 
+import lombok.Getter;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.util.List;
@@ -30,14 +32,14 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings({"WeakerAccess", "unchecked"})
-public class CommandExecutionContext<CEC extends CommandExecutionContext, I extends CommandIssuer> {
-    private final RegisteredCommand cmd;
+public class CommandExecutionContext<I extends CommandIssuer> {
+    @Getter private final RegisteredCommand cmd;
     private final CommandParameter param;
-    protected final I issuer;
-    private final List<String> args;
-    private final int index;
-    private final Map<String, Object> passedArgs;
-    private final Map<String, String> flags;
+    @Getter protected final I issuer;
+    @Getter private final List<String> args;
+    @Getter private final int index;
+    @Getter private final Map<String, Object> passedArgs;
+    @Getter private final Map<String, String> flags;
     private final CommandManager manager;
 
     CommandExecutionContext(RegisteredCommand cmd, CommandParameter param, I sender, List<String> args,
@@ -194,10 +196,6 @@ public class CommandExecutionContext<CEC extends CommandExecutionContext, I exte
         return manager.getAnnotations().hasAnnotation(param.getParameter(), cls);
     }
 
-    public RegisteredCommand getCmd() {
-        return this.cmd;
-    }
-
     CommandParameter getCommandParameter() {
         return this.param;
     }
@@ -205,26 +203,6 @@ public class CommandExecutionContext<CEC extends CommandExecutionContext, I exte
     @Deprecated
     public Parameter getParam() {
         return this.param.getParameter();
-    }
-
-    public I getIssuer() {
-        return this.issuer;
-    }
-
-    public List<String> getArgs() {
-        return this.args;
-    }
-
-    public int getIndex() {
-        return this.index;
-    }
-
-    public Map<String, Object> getPassedArgs() {
-        return this.passedArgs;
-    }
-
-    public Map<String, String> getFlags() {
-        return this.flags;
     }
 
     public String joinArgs() {

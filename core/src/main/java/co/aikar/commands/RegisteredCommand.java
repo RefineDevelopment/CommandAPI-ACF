@@ -47,7 +47,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -58,7 +57,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
-public class RegisteredCommand<CEC extends CommandExecutionContext<CEC, ? extends CommandIssuer>> {
+public class RegisteredCommand<CEC extends CommandExecutionContext<? extends CommandIssuer>> {
     public final BaseCommand scope;
     public final Method method;
     public final CommandParameter<CEC>[] parameters;

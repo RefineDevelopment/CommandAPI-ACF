@@ -36,7 +36,7 @@ import co.aikar.commands.InvalidCommandArgument;
  *         The type of the context which the resolver would get its data from.
  */
 @FunctionalInterface
-public interface ContextResolver <T, C extends CommandExecutionContext<?, ? extends CommandIssuer>> {
+public interface ContextResolver <T, C extends CommandExecutionContext<? extends CommandIssuer>> {
     /**
      * Parses the context of type {@link C} into {@link T}, or throws an exception.
      *

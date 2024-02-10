@@ -23,6 +23,7 @@
 
 package co.aikar.commands;
 
+import lombok.experimental.UtilityClass;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 
@@ -31,28 +32,24 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("WeakerAccess")
+@UtilityClass
 final class ACFPatterns {
-    public static final Pattern COMMA = Pattern.compile(",");
-    public static final Pattern PERCENTAGE = Pattern.compile("%", Pattern.LITERAL);
-    public static final Pattern NEWLINE = Pattern.compile("\n");
-    public static final Pattern DASH = Pattern.compile("-");
-    public static final Pattern SPACE = Pattern.compile(" ");
-    public static final Pattern COLON = Pattern.compile(":");
-    public static final Pattern COLONEQUALS = Pattern.compile("([:=])");
-    public static final Pattern PIPE = Pattern.compile("\\|");
-    public static final Pattern NON_ALPHA_NUMERIC = Pattern.compile("[^a-zA-Z0-9]");
-    public static final Pattern INTEGER = Pattern.compile("^[0-9]+$");
-    public static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_$]{1,16}$");
-    public static final Pattern NON_PRINTABLE_CHARACTERS = Pattern.compile("[^\\x20-\\x7F]");
-    public static final Pattern EQUALS = Pattern.compile("=");
-    public static final Pattern FORMATTER = Pattern.compile("<c(?<color>\\d+)>(?<msg>.*?)</c\\1>", Pattern.CASE_INSENSITIVE);
-    public static final Pattern REPLACEMENT_PATTERN = Pattern.compile("%\\{.[^\\s]*}");
+    public final Pattern COMMA = Pattern.compile(",");
+    public final Pattern PERCENTAGE = Pattern.compile("%", Pattern.LITERAL);
+    public final Pattern NEWLINE = Pattern.compile("\n");
+    public final Pattern DASH = Pattern.compile("-");
+    public final Pattern SPACE = Pattern.compile(" ");
+    public final Pattern COLON = Pattern.compile(":");
+    public final Pattern COLONEQUALS = Pattern.compile("([:=])");
+    public final Pattern PIPE = Pattern.compile("\\|");
+    public final Pattern NON_ALPHA_NUMERIC = Pattern.compile("[^a-zA-Z0-9]");
+    public final Pattern INTEGER = Pattern.compile("^[0-9]+$");
+    public final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_$]{1,16}$");
+    public final Pattern NON_PRINTABLE_CHARACTERS = Pattern.compile("[^\\x20-\\x7F]");
+    public final Pattern EQUALS = Pattern.compile("=");
+    public final Pattern REPLACEMENT_PATTERN = Pattern.compile("%\\{.[^\\s]*}");
 
-
-    private ACFPatterns() {
-    }
-
-    static final Map<String, Pattern> patternCache = ExpiringMap.builder()
+    final Map<String, Pattern> patternCache = ExpiringMap.builder()
             .maxSize(200)
             .expiration(1, TimeUnit.HOURS)
             .expirationPolicy(ExpirationPolicy.ACCESSED)
@@ -68,7 +65,7 @@ final class ACFPatterns {
      * @param pattern The raw pattern in a String.
      * @return The pattern which has been cached.
      */
-    public static Pattern getPattern(String pattern) {
+    public Pattern getPattern(String pattern) {
         return patternCache.computeIfAbsent(pattern, s -> Pattern.compile(pattern));
     }
 }

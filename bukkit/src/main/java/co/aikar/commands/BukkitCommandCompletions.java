@@ -42,7 +42,6 @@ import java.util.stream.Stream;
 
 @SuppressWarnings("WeakerAccess")
 public class BukkitCommandCompletions extends CommandCompletions<BukkitCommandCompletionContext> {
-
     public BukkitCommandCompletions(BukkitCommandManager manager) {
         super(manager);
         registerAsyncCompletion("mobs", c -> {
