@@ -37,7 +37,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 
@@ -116,10 +115,6 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
      */
     public abstract CommandCompletions<?> getCommandCompletions();
 
-    /**
-     * @deprecated Unstable API
-     */
-    @Deprecated
     public CommandHelp generateCommandHelp(@NotNull String command) {
         CommandOperationContext context = getCurrentCommandOperationContext();
         if (context == null) {
@@ -161,7 +156,6 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
 
     public abstract boolean isCommandIssuer(Class<?> type);
 
-    // TODO: Change this to IT if we make a breaking change
     public abstract I getCommandIssuer(Object issuer);
 
     public abstract RootCommand createRootCommand(String cmd);

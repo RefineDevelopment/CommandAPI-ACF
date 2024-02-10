@@ -13,6 +13,7 @@ package co.aikar.commands.config.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -31,16 +32,19 @@ import java.util.Map;
 public class YamlConfiguration {
 
     private final ThreadLocal<Yaml> yaml = ThreadLocal.withInitial(() -> {
-        Representer representer = new Representer() {
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        Representer representer = new Representer(options) {
             {
                 representers.put(Configuration.class, data -> represent(((Configuration) data).self));
             }
         };
 
-        DumperOptions options = new DumperOptions();
+        LoaderOptions loaderOptions = new LoaderOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-        return new Yaml(new Constructor(), representer, options);
+        return new Yaml(new Constructor(loaderOptions), representer, options);
     });
 
     public void save(Configuration config, File file) throws IOException {
