@@ -77,14 +77,12 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
     @Getter protected ExceptionHandler defaultExceptionHandler = null;
     protected Table<Class<?>, String, Object> dependencies = new Table<>();
     @Setter @Getter protected CommandHelpFormatter helpFormatter = new CommandHelpFormatter();
-    @Setter
-    @Getter
-    protected int defaultHelpPerPage = 10;
+    @Setter @Getter protected int defaultHelpPerPage = 10;
 
     boolean logUnhandledExceptions = true;
 
-    @Getter private Annotations annotations = new Annotations<>(this);
-    private CommandRouter router = new CommandRouter(this);
+    @Getter private Annotations<CommandManager<IT, I, CEC, CC>> annotations = new Annotations<>(this);
+    private final CommandRouter router = new CommandRouter();
 
     public static CommandOperationContext getCurrentCommandOperationContext() {
         return commandOperationContext.get().peek();
