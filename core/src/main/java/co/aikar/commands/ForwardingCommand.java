@@ -52,11 +52,6 @@ public class ForwardingCommand extends BaseCommand {
     }
 
     @Override
-    public Set<String> getRequiredPermissions() {
-        return command.getRequiredPermissions();
-    }
-
-    @Override
     public boolean hasPermission(Object issuer) {
         return command.hasPermission(issuer);
     }
