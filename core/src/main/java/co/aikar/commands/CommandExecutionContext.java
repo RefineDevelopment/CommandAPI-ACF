@@ -110,8 +110,8 @@ public class CommandExecutionContext<I extends CommandIssuer> {
         return null;
     }
 
-    public String getParameterPermission() {
-        return param.getPermission();
+    public Set<String> getParameterPermissions() {
+        return param.getRequiredPermissions();
     }
 
     public boolean isOptional() {

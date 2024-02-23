@@ -38,7 +38,6 @@ import co.aikar.commands.config.impl.MessageConfig;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -70,7 +69,6 @@ import java.util.stream.Stream;
  * then each actionable command is a sub command
  */
 
-@NoArgsConstructor
 public abstract class BaseCommand {
 
     /**
@@ -98,6 +96,10 @@ public abstract class BaseCommand {
      * The last operative context data of this command. This may be null if this command is not currently being executed.
      */
     private final ThreadLocal<CommandOperationContext> lastCommandOperationContext = new ThreadLocal<>();
+    /**
+     * The permissions of the command.
+     */
+    private final Set<String> permissions = new HashSet<>();
     /**
      * The manager this is registered to
      */
@@ -159,13 +161,26 @@ public abstract class BaseCommand {
     /**
      * The handler of all uncaught exceptions thrown by the user's command implementation.
      */
-    @Getter
     private ExceptionHandler exceptionHandler = null;
     /**
      * If a parent exists to this command, and it has  a Subcommand annotation, prefix all subcommands in this class with this
      */
     @Nullable
     private String parentSubcommand;
+
+    public BaseCommand() {
+    }
+
+    /**
+     * Constructor based defining of commands will be removed in the next version bump.
+     *
+     * @param cmd
+     * @deprecated Please switch to {@link CommandAlias} for defining all root commands.
+     */
+    @Deprecated
+    public BaseCommand(@Nullable String cmd) {
+        this.commandName = cmd;
+    }
 
     /**
      * Takes a string like "foo|bar baz|qux" and generates a list of
@@ -279,6 +294,7 @@ public abstract class BaseCommand {
         this.parentSubcommand = getParentSubcommand(self);
         this.conditions = annotations.getAnnotationValue(self, Conditions.class, Annotations.REPLACEMENTS | Annotations.NO_EMPTY);
 
+        computePermissions(); // Must be before any subcommands so they can inherit permissions
         registerSubcommands();
         registerSubclasses(cmd);
 
@@ -392,6 +408,21 @@ public abstract class BaseCommand {
                 registerSubcommand(method, sublist);
             }
         }
+    }
+
+    /**
+     * This registers all the permissions required to execute this command.
+     */
+    private void computePermissions() {
+        this.permissions.clear();
+        if (this.permission != null && !this.permission.isEmpty()) {
+            this.permissions.addAll(Arrays.asList(this.permission.split(",")));
+        }
+        if (this.parentCommand != null) {
+            this.permissions.addAll(this.parentCommand.getRequiredPermissions());
+        }
+        this.subCommands.values().forEach(RegisteredCommand::computePermissions);
+        this.subScopes.forEach(BaseCommand::computePermissions);
     }
 
     /**
@@ -543,7 +574,7 @@ public abstract class BaseCommand {
         }
 
         commandOperationContext.setRegisteredCommand(cmd);
-        if (checkPrecommand(cmd, issuer, args)) {
+        if (checkPrecommand(commandOperationContext, cmd, issuer, args)) {
             return;
         }
 
@@ -595,7 +626,7 @@ public abstract class BaseCommand {
             final List<String> cmds = new ArrayList<>();
             if (search != null) {
                 for (RegisteredCommand<?> command : search.commands) {
-                    cmds.addAll(completeCommand(issuer, command, search.args, isAsync));
+                    cmds.addAll(completeCommand(issuer, command, search.args, commandLabel, isAsync));
                 }
             }
 
@@ -635,13 +666,14 @@ public abstract class BaseCommand {
     /**
      * Complete a command properly per issuer and input.
      *
-     * @param issuer  The user who executed this.
-     * @param cmd     The command to be completed.
-     * @param args    All arguments given by the user.
-     * @param isAsync Whether the command was executed async.
+     * @param issuer       The user who executed this.
+     * @param cmd          The command to be completed.
+     * @param args         All arguments given by the user.
+     * @param commandLabel The command name the user used.
+     * @param isAsync      Whether the command was executed async.
      * @return All results to complete the command.
      */
-    private List<String> completeCommand(CommandIssuer issuer, RegisteredCommand cmd, String[] args, boolean isAsync) {
+    private List<String> completeCommand(CommandIssuer issuer, RegisteredCommand cmd, String[] args, String commandLabel, boolean isAsync) {
         if (!cmd.hasPermission(issuer) || args.length == 0 || cmd.parameters.length == 0) {
             return Collections.emptyList();
         }
@@ -657,12 +689,13 @@ public abstract class BaseCommand {
     /**
      * Executes the precommand and sees whether something is wrong. Ideally, you get false from this.
      *
-     * @param cmd    The command executed.
-     * @param issuer The issuer who executed the command.
-     * @param args   The arguments the issuer provided.
+     * @param commandOperationContext The context to use.
+     * @param cmd                     The command executed.
+     * @param issuer                  The issuer who executed the command.
+     * @param args                    The arguments the issuer provided.
      * @return Whether something went wrong.
      */
-    private boolean checkPrecommand(RegisteredCommand cmd, CommandIssuer issuer, String[] args) {
+    private boolean checkPrecommand(CommandOperationContext commandOperationContext, RegisteredCommand cmd, CommandIssuer issuer, String[] args) {
         Method pre = this.preCommandHandler;
         if (pre != null) {
             try {
@@ -727,15 +760,23 @@ public abstract class BaseCommand {
     }
 
     public boolean hasPermission(CommandIssuer issuer) {
-        return this.manager.hasPermission(issuer, permission);
+        return this.manager.hasPermission(issuer, getRequiredPermissions());
+    }
+
+    public Set<String> getRequiredPermissions() {
+        return this.permissions;
     }
 
     public boolean requiresPermission(String permission) {
-        return this.permission != null && this.permission.equals(permission);
+        return getRequiredPermissions().contains(permission);
     }
 
     public String getName() {
         return commandName;
+    }
+
+    public ExceptionHandler getExceptionHandler() {
+        return exceptionHandler;
     }
 
     public BaseCommand setExceptionHandler(ExceptionHandler exceptionHandler) {

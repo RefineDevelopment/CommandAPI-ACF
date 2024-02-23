@@ -67,6 +67,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<? extends Com
     public final int consumeInputResolvers;
     public final int doesNotConsumeInputResolvers;
     public final int optionalResolvers;
+    public final Set<String> permissions = new HashSet<>();
     public String helpSearchTags;
 
     @Getter public String command;
@@ -137,6 +138,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<? extends Com
         this.consumeInputResolvers = consumeInputResolvers;
         this.doesNotConsumeInputResolvers = doesNotConsumeInputResolvers;
         this.optionalResolvers = optionalResolvers;
+        this.computePermissions();
     }
 
     void invoke(CommandIssuer sender, List<String> args, CommandOperationContext context) {
@@ -260,13 +262,13 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<? extends Com
                 remainingRequired--;
             }
 
-            String parameterPermission = parameter.getPermission();
+            Set<String> parameterPermissions = parameter.getRequiredPermissions();
             if (args.isEmpty() && !(isLast && type == String[].class)) {
                 if (allowOptional && parameter.getDefaultValue() != null) {
                     args.add(parameter.getDefaultValue());
                 } else if (allowOptional && parameter.isOptional()) {
                     Object value;
-                    if (!parameter.isOptionalResolver() || !this.manager.hasPermission(sender, parameterPermission)) {
+                    if (!parameter.isOptionalResolver() || !this.manager.hasPermission(sender, parameterPermissions)) {
                         value = null;
                     } else {
                         value = resolver.getContext(context);
@@ -284,7 +286,7 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<? extends Com
                     return null;
                 }
             } else {
-                if (!this.manager.hasPermission(sender, parameterPermission)) {
+                if (!this.manager.hasPermission(sender, parameterPermissions)) {
                     sender.sendError(MessageConfig.IMP.ERROR.NO_PERMISSION);
                     throw new InvalidCommandArgument(false);
                 }
@@ -324,20 +326,35 @@ public class RegisteredCommand<CEC extends CommandExecutionContext<? extends Com
     }
 
     boolean hasPermission(CommandIssuer issuer) {
-        return this.manager.hasPermission(issuer, permission);
+        return this.manager.hasPermission(issuer, getRequiredPermissions());
     }
 
+    /**
+     * @see #getRequiredPermissions()
+     * @deprecated
+     */
+    @Deprecated
     public String getPermission() {
         if (this.permission == null || this.permission.isEmpty()) {
             return null;
         }
-
-        return this.permission;
+        return this.permission.split(",")[0];
     }
 
+    void computePermissions() {
+        this.permissions.clear();
+        this.permissions.addAll(this.scope.getRequiredPermissions());
+        if (this.permission != null && !this.permission.isEmpty()) {
+            this.permissions.addAll(Arrays.asList(this.permission.split(",")));
+        }
+    }
+
+    public Set<String> getRequiredPermissions() {
+        return this.permissions;
+    }
 
     public boolean requiresPermission(String permission) {
-        return this.permission != null && this.permission.equals(permission);
+        return getRequiredPermissions().contains(permission);
     }
 
     public String getSyntaxText() {

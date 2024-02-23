@@ -58,13 +58,14 @@ public interface RootCommand {
         Set<String> permissions = new HashSet<>();
         for (BaseCommand child : getChildren()) {
             for (RegisteredCommand<?> value : child.subCommands.values()) {
-                String requiredPermission = value.getPermission();
-                if (requiredPermission == null || requiredPermission.isEmpty()) return null;
-
-                permissions.add(requiredPermission);
+                Set<String> requiredPermissions = value.getRequiredPermissions();
+                if (requiredPermissions.isEmpty()) {
+                    return null;
+                } else {
+                    permissions.addAll(requiredPermissions);
+                }
             }
         }
-
         return permissions.size() == 1 ? permissions.iterator().next() : null;
     }
 

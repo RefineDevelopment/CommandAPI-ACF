@@ -189,12 +189,25 @@ public abstract class CommandManager<IT, I extends CommandIssuer, CEC extends Co
         return replacements;
     }
 
+    public boolean hasPermission(CommandIssuer issuer, Set<String> permissions) {
+        for (String permission : permissions) {
+            if (!hasPermission(issuer, permission)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean hasPermission(CommandIssuer issuer, String permission) {
         if (permission == null || permission.isEmpty()) {
             return true;
         }
-
-        return issuer.hasPermission(permission);
+        for (String perm : ACFPatterns.COMMA.split(permission)) {
+            if (!perm.isEmpty() && !issuer.hasPermission(perm)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public synchronized RootCommand getRootCommand(@NotNull String cmd) {

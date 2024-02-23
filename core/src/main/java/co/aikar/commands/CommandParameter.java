@@ -56,7 +56,8 @@ public class CommandParameter<CEC extends CommandExecutionContext<? extends Comm
 
     @Setter @Getter private ContextResolver<?, CEC> resolver;
     @Getter @Setter private boolean optional;
-    @Getter private String permission;
+    private Set<String> permissions = new HashSet<>();
+    private String permission;
     @Getter @Setter private String description;
     @Setter @Getter private String defaultValue;
     @Setter private String syntax;
@@ -118,6 +119,7 @@ public class CommandParameter<CEC extends CommandExecutionContext<? extends Comm
             parseFlags(flags);
         }
         inheritContextFlags(command.scope);
+        this.computePermissions();
     }
 
     private void inheritContextFlags(BaseCommand scope) {
@@ -140,6 +142,13 @@ public class CommandParameter<CEC extends CommandExecutionContext<? extends Comm
                     this.flags.put(v[0], v.length > 1 ? v[1] : null);
                 }
             }
+        }
+    }
+
+    private void computePermissions() {
+        this.permissions.clear();
+        if (this.permission != null && !this.permission.isEmpty()) {
+            this.permissions.addAll(Arrays.asList(this.permission.split(",")));
         }
     }
 
@@ -171,6 +180,10 @@ public class CommandParameter<CEC extends CommandExecutionContext<? extends Comm
             }
         }
         return syntax;
+    }
+
+    public Set<String> getRequiredPermissions() {
+        return permissions;
     }
 
     public boolean canExecuteWithoutInput() {
