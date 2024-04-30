@@ -39,13 +39,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class VelocityCommandManager extends CommandManager<CommandSource, VelocityCommandIssuer, VelocityCommandExecutionContext, VelocityConditionContext> {
 
-    @Getter protected final ProxyServer proxy;
-    @Getter protected final PluginContainer plugin;
+    @Getter
+    protected final ProxyServer proxy;
+    @Getter
+    protected final PluginContainer plugin;
     protected Map<String, VelocityRootCommand> registeredCommands = new HashMap<>();
     protected VelocityCommandContexts contexts;
     protected VelocityCommandCompletions completions;
@@ -55,6 +56,19 @@ public class VelocityCommandManager extends CommandManager<CommandSource, Veloci
         this.plugin = proxy.getPluginManager().getPlugin(plugin.getClass().getAnnotation(Plugin.class).id()).get();
 
         new MessageConfig().createConfig(this.plugin.getDescription().getName().get());
+
+        registerDependency(plugin.getClass(), plugin);
+        registerDependency(Plugin.class, plugin);
+        registerDependency(ProxyServer.class, proxy);
+    }
+
+    public VelocityCommandManager(ProxyServer proxy, Object plugin, boolean config) {
+        this.proxy = proxy;
+        this.plugin = proxy.getPluginManager().getPlugin(plugin.getClass().getAnnotation(Plugin.class).id()).get();
+
+        if (config) {
+            new MessageConfig().createConfig(this.plugin.getDescription().getName().get());
+        }
 
         registerDependency(plugin.getClass(), plugin);
         registerDependency(Plugin.class, plugin);

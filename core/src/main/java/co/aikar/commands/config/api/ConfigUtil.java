@@ -30,7 +30,7 @@ import java.util.List;
 
 public class ConfigUtil {
     @Ignore
-    private final YamlConfiguration yamlConfiguration = new YamlConfiguration();
+    private transient final YamlConfiguration yamlConfiguration = new YamlConfiguration();
 
     public ConfigUtil() {
         save(new ArrayList<>(), getClass(), this, 0);
